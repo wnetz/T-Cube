@@ -64,110 +64,19 @@ int addT(int (* cube)[6][6][6], vector<int> point)
     return orientation;
 }
 
-void updateFroteier(vector<vector<int>> *cubeFroteier,vector<vector<int>> *cubeExplored, int orientation)
+void updateExplored (vector<vector<int>> *cubeFrontier ,vector<vector<int>> *cubeExplored, vector<vector<int>> newExplored)
 {
-    //add new froteier points
-    //find and remove froteier points that were not explored but still filled
-    //add exlored points
-    int start[3] = {(*cubeFroteier)[0][0],(*cubeFroteier)[0][1],(*cubeFroteier)[0][2]};
-    
-    //find all posible new froteier points
-    vector<vector<int>> newFroteier;
-    if(start[0] + 1 >= 0 && start[0] + 1 < 6)
+    //remove newExplored points from frontier
+    int index = 0;
+    while(index < cubeFrontier->size())
     {
-        newFroteier.push_back(vector<int>{start[0] + 1,start[1],start[2]});
-    }
-    if(start[0] - 1 >= 0 && start[0] - 1 < 6)
-    {
-        newFroteier.push_back(vector<int>{start[0] - 1,start[1],start[2]});
-    }
-    if(start[1] + 1 >= 0 && start[1] + 1 < 6)
-    {
-        newFroteier.push_back(vector<int>{start[0],start[1] + 1,start[2]});
-    }
-    if(start[1] - 1 >= 0 && start[1] - 1 < 6)
-    {
-        newFroteier.push_back(vector<int>{start[0],start[1] - 1,start[2]});
-    }
-    if(start[2] + 1 >= 0 && start[2] + 1 < 6)
-    {
-        newFroteier.push_back(vector<int>{start[0],start[1],start[2] + 1});
-    }
-    if(start[2] - 1 >= 0 && start[2] - 1 < 6)
-    {
-        newFroteier.push_back(vector<int>{start[0],start[1],start[2] - 1});
-    }
-    for(int i = 0; i < 3; i++)
-    {
-        if(start[0] + orientations[orientation][i][0] + 1 >= 0 && start[0] + orientations[orientation][i][0] + 1 < 6)
-        {
-            newFroteier.push_back(vector<int>{start[0] + orientations[orientation][i][0] + 1,start[1] + orientations[orientation][i][1],start[2] + orientations[orientation][i][2]});
-        }
-        if(start[0] + orientations[orientation][i][0] - 1 >= 0 && start[0] + orientations[orientation][i][0] - 1 < 6)
-        {
-            newFroteier.push_back(vector<int>{start[0] + orientations[orientation][i][0] - 1,start[1] + orientations[orientation][i][1],start[2] + orientations[orientation][i][2]});
-        }
-        if(start[1] + orientations[orientation][i][1] + 1 >= 0 && start[1] + orientations[orientation][i][1] + 1 < 6)
-        {
-            newFroteier.push_back(vector<int>{start[0] + orientations[orientation][i][0],start[1] + orientations[orientation][i][1] + 1,start[2] + orientations[orientation][i][2]});
-        }
-        if(start[1] + orientations[orientation][i][1] - 1 >= 0 && start[1] + orientations[orientation][i][1] - 1 < 6)
-        {
-            newFroteier.push_back(vector<int>{start[0] + orientations[orientation][i][0],start[1] + orientations[orientation][i][1] - 1,start[2] + orientations[orientation][i][2]});
-        }
-        if(start[2] + orientations[orientation][i][2] + 1 >= 0 && start[2] + orientations[orientation][i][2] + 1 < 6)
-        {
-            newFroteier.push_back(vector<int>{start[0] + orientations[orientation][i][0],start[1] + orientations[orientation][i][1],start[2] + orientations[orientation][i][2] + 1});
-        }
-        if(start[2] + orientations[orientation][i][2] - 1 >= 0 && start[2] + orientations[orientation][i][2] - 1 < 6)
-        {
-            newFroteier.push_back(vector<int>{start[0] + orientations[orientation][i][0],start[1] + orientations[orientation][i][1],start[2] + orientations[orientation][i][2] - 1});
-        }
-    }
-    cout<<"newFroteier: ";
-    for(vector<int> point :newFroteier)
-    {
-        printf("{%d,%d,%d}",point[0],point[1],point[2]);
-    }
-    cout<<endl;
-
-    //get unique new elements
-    vector<vector<int>> addFroteier;
-    for(vector<int> newPoint : newFroteier)
-    {
-        for(vector<int> point : (*cubeFroteier))
+        bool in = false;
+        for(vector<int> point : newExplored)
         {
             bool pointMatch = true;
             for(int k = 0; k < 3; k++)// match xyz
             {
-                if(newPoint[k] != point[k])
-                {
-                    pointMatch = false;
-                }
-            }
-            if(!pointMatch)
-            {
-                addFroteier.push_back(vector<int>{newPoint[0],newPoint[1],newPoint[2]});
-            }
-        }
-    }
-    /*cout<<"addFroteier: ";
-    for(vector<int> point :addFroteier)
-    {
-        printf("{%d,%d,%d}",point[0],point[1],point[2]);
-    }
-    cout<<endl;*/
-    //filter addFroteier
-    int index = 0;
-    while(index < addFroteier.size())
-    {
-        bool in = false;
-        for(int i = index+1; i < addFroteier.size();i++)
-        {    
-            bool pointMatch = true;        
-            for(int k = 0; k < 3; k++)// match xyz
-            {
-                if(addFroteier[index][k] != addFroteier[i][k])
+                if((*cubeFrontier )[index][k] != point[k])
                 {
                     pointMatch = false;
                 }
@@ -179,160 +88,223 @@ void updateFroteier(vector<vector<int>> *cubeFroteier,vector<vector<int>> *cubeE
         }
         if(in)
         {
-            addFroteier.erase(next(addFroteier.begin(),index));
-        }
-        else
-        {
-            index++;
-        }
-    }
-    cout<<"filterdaddFroteier: ";
-    for(vector<int> point :addFroteier)
-    {
-        printf("{%d,%d,%d}",point[0],point[1],point[2]);
-    }
-    cout<<endl;
-
-    //find elements not explored but filled   
-    vector<int> remove{0};
-    index = 0;
-    while (index < cubeFroteier->size())
-    {
-        for(int j = 0; j < 3; j++)
-        {
-            bool pointMatch = true;
-            for(int k = 0; k < 3; k++)// match xyz
-            {
-                if((*cubeFroteier)[index][k] != start[k] + orientations[orientation][j][k])
-                {
-                    pointMatch = false;
-                }
-            }
-            if(pointMatch)
-            {
-                cubeExplored->push_back(vector<int>{(*cubeFroteier)[index][0],(*cubeFroteier)[index][1],(*cubeFroteier)[index][2]});
-                if(index == 0)
-                {
-                    cubeFroteier->erase(cubeFroteier->begin());
-                }
-                else
-                {
-                    cubeFroteier->erase(next(cubeFroteier->begin(),index));
-                }                
-                index --;
-            }
+            cubeFrontier->erase(next(cubeFrontier ->begin(),index));                       
+            index --; 
         }
         index ++;
     }
+    cout << "frontier -  newExplored:"; 
+    for(vector<int> point :(*cubeFrontier))
+    {
+        printf("{%d,%d,%d}",point[0],point[1],point[2]);
+    }
+    cout<<endl;
     
-    /*for(int i = 0; i < cubeFroteier->size(); i++)
-    {
-        for(int j = 0; j < 3; j++)
-        {
-            bool pointMatch = true;
-            for(int k = 0; k < 3; k++)// match xyz
-            {
-                if((*cubeFroteier)[i][k] != start[k] + orientations[orientation][j][k])
-                {
-                    pointMatch = false;
-                }
-            }
-            if(pointMatch)
-            {
-                remove.push_back(i);
-            }
-        }
-    }*/
-
-    //remove elements not explored but filled
-    //loop backwards so that the largest indexes are erased first to avoid problem of index shifting
-    for(int i = remove.size()-1; i >= 0 ; i--)
-    {
-        cubeExplored->push_back(vector<int>{(*cubeFroteier)[remove[i]][0],(*cubeFroteier)[remove[i]][1],(*cubeFroteier)[remove[i]][2]});
-        cubeFroteier->erase(next(cubeFroteier->begin(),i)); 
-    }  
-
-    cout<<"eraseFroteier: ";
-    for(vector<int> point :(*cubeFroteier))
-    {
-        printf("{%d,%d,%d}",point[0],point[1],point[2]);
-    }  
-    cout<<endl;
-
-    cout<<"xxExplored: ";
-    for(vector<int> point :(*cubeExplored))
-    {
-        printf("{%d,%d,%d}",point[0],point[1],point[2]);
-    }
-    cout<<endl;
-    //add elemnts that were never in froteier but filled
+    //add newExplored points to explored
     index = 0;
-    int end = cubeExplored->size();
-    while(index < end)
+    if(cubeExplored->size() == 0)
     {
-        //printf("{%d,%d,%d}\n",(*cubeExplored)[index][0],(*cubeExplored)[index][1],(*cubeExplored)[index][2]);
-        for(int j = 0; j < 3; j++)
+        cout << "0 cubeExplored" << endl;
+        cubeExplored->insert(cubeExplored->end(),newExplored.begin(),newExplored.end());
+    }
+    else
+    {
+        for(vector<int> newpoint : newExplored)
         {
-            bool pointMatch = true; 
-            //printf("{%d,%d,%d}\n",start[0] + orientations[orientation][j][0],start[1] + orientations[orientation][j][1],start[2] + orientations[orientation][j][2]);           
-            for(int k = 0; k < 3; k++)// match xyz
-            { 
-                if((*cubeExplored)[index][k] != start[k] + orientations[orientation][j][k])
+            bool in = false;
+            for(vector<int> point : (*cubeExplored))
+            {
+                bool pointMatch = true;
+                for(int k = 0; k < 3; k++)// match xyz
                 {
-                    pointMatch = false;
+                    if(newpoint[k] != point[k])
+                    {
+                        pointMatch = false;
+                    }
+                }
+                if(pointMatch)
+                {
+                    in = true;
                 }
             }
-            if(!pointMatch)
+            if(!in)
             {
-                cubeExplored->push_back(vector<int>{start[0] + orientations[orientation][j][0],start[1] + orientations[orientation][j][1],start[2] + orientations[orientation][j][2]});
+                cubeExplored->push_back(vector<int>{newpoint[0],newpoint[1],newpoint[2]});
+                index --; 
             }
+            index ++;
         }
-        index++;
     }
-    cout<<"Explored: ";
+    cout << "explored + newExplored:"; 
     for(vector<int> point :(*cubeExplored))
     {
         printf("{%d,%d,%d}",point[0],point[1],point[2]);
     }
     cout<<endl;
+}
 
-    //add new froteier that is not in explored
-    for(vector<int> newPoint : addFroteier)
+void updateFrontier (vector<vector<int>> *cubeFrontier ,vector<vector<int>> *cubeExplored, vector<vector<int>> newExplored)
+{
+    //get all possible new frontier points in range 
+    vector<vector<int>> newFrontier;
+    for(vector<int> point : newExplored)
     {
-        bool notin = true;
+        if(point[0] + 1 >= 0 && point[0] + 1 < 6)
+        {
+            newFrontier.push_back(vector<int>{point[0] + 1,point[1],point[2]});
+        }
+        if(point[0] - 1 >= 0 && point[0] - 1 < 6)
+        {
+            newFrontier.push_back(vector<int>{point[0] - 1,point[1],point[2]});
+        }
+        if(point[1] + 1 >= 0 && point[1] + 1 < 6)
+        {
+            newFrontier.push_back(vector<int>{point[0],point[1] + 1,point[2]});
+        }
+        if(point[1] - 1 >= 0 && point[1] - 1 < 6)
+        {
+            newFrontier.push_back(vector<int>{point[0],point[1] - 1,point[2]});
+        }
+        if(point[2] + 1 >= 0 && point[2] + 1 < 6)
+        {
+            newFrontier.push_back(vector<int>{point[0],point[1],point[2] + 1});
+        }
+        if(point[2] - 1 >= 0 && point[2] - 1 < 6)
+        {
+            newFrontier.push_back(vector<int>{point[0],point[1],point[2] - 1});
+        }
+    }
+    cout << "newFrontier:"; 
+    for(vector<int> point :newFrontier)
+    {
+        printf("{%d,%d,%d}",point[0],point[1],point[2]);
+    }
+    cout<<endl;
+    
+    //remove explored points from newFrontier
+    int index = 0;
+    while(index < newFrontier.size())
+    {
+        bool in = false;
         for(vector<int> point : (*cubeExplored))
         {
             bool pointMatch = true;
             for(int k = 0; k < 3; k++)// match xyz
             {
-                if(newPoint[k] != point[k])
+                if(newFrontier[index][k] != point[k])
                 {
                     pointMatch = false;
                 }
             }
             if(pointMatch)
             {
-                notin = false;
+                in = true;
             }
         }
-        if(notin)
+        if(in)
         {
-            cubeFroteier->push_back(vector<int>{newPoint[0],newPoint[1],newPoint[2]});
+            newFrontier.erase(next(newFrontier.begin(),index));                       
+            index --; 
         }
-    }   
-
-    cout<<"Froteier: ";
-    for(vector<int> point :(*cubeFroteier))
+        index ++;
+    }
+    cout << "newFrontier - explored:"; 
+    for(vector<int> point :newFrontier)
     {
         printf("{%d,%d,%d}",point[0],point[1],point[2]);
     }
-    cout<<endl;    
+    cout<<endl;
+    
+    //add newFrontier points to frontier
+    index = 0;
+    if(cubeFrontier->size() == 0)
+    {
+        cout << "0 cubeFrontier" << endl;
+        for(int i = 0; i < newFrontier.size(); i++)
+        {
+            bool in = false;
+            for(int j = i+1; j < newFrontier.size(); j++)
+            {
+                bool pointMatch = true;
+                for(int k = 0; k < 3; k++)
+                {
+                    if(newFrontier[i][k] != newFrontier[j][k])
+                    {
+                        pointMatch = false;
+                    }
+                }
+                if(pointMatch)
+                {
+                    in = true;
+                }
+            }
+            if(!in)
+            {
+                cubeFrontier->push_back(vector<int>{newFrontier[i][0],newFrontier[i][1],newFrontier[i][2]});
+            }
+        }
+    }
+    else
+    {
+        for(vector<int> newpoint : newFrontier)
+        {
+            bool in = false;
+            for(vector<int> point : (*cubeFrontier))
+            {
+                bool pointMatch = true;
+                for(int k = 0; k < 3; k++)// match xyz
+                {
+                    if(newpoint[k] != point[k])
+                    {
+                        pointMatch = false;
+                    }
+                }
+                if(pointMatch)
+                {
+                    in = true;
+                }
+            }
+            if(!in)
+            {
+                cubeFrontier->push_back(vector<int>{newpoint[0],newpoint[1],newpoint[2]});
+                index --; 
+            }
+            index ++;
+        }
+    }
+    cout << "frontier + newFrontier:"; 
+    for(vector<int> point :(*cubeFrontier))
+    {
+        printf("{%d,%d,%d}",point[0],point[1],point[2]);
+    }
+    cout<<endl;
+}
+
+void update (vector<vector<int>> *cubeFrontier ,vector<vector<int>> *cubeExplored, int orientation)
+{
+    //get all new explored points
+    vector<vector<int>> newExplored{vector<int>{(*cubeFrontier )[0][0],(*cubeFrontier )[0][1],(*cubeFrontier )[0][2]}};
+    for(int i = 0; i < 3; i++)
+    {
+        newExplored.push_back(vector<int>{newExplored[0][0] + orientations[orientation][i][0],newExplored[0][1] + orientations[orientation][i][1],newExplored[0][2] + orientations[orientation][i][2]});
+    }
+    cout << "newExplored :"; 
+    for(vector<int> point :newExplored)
+    {
+        printf("{%d,%d,%d}",point[0],point[1],point[2]);
+    }
+    cout<<endl;
+    
+    updateExplored(cubeFrontier,cubeExplored,newExplored); 
+    updateFrontier(cubeFrontier,cubeExplored,newExplored); 
+    
+     
 }
 
 int main()
 {    
     int cube [6][6][6];
-    vector<vector<int>> cubeFroteier{vector<int> (3, 0)};
+    vector<vector<int>> cubeFrontier {vector<int> (3, 0)};
     vector<vector<int>> cubeExplored;
     
     cout<< "sdrghfd"<< endl;
@@ -346,8 +318,8 @@ int main()
             }
         }
     }
-    cout<<"Froteier: ";
-    for(vector<int> point :cubeFroteier)
+    cout<<"Frontier : ";
+    for(vector<int> point :cubeFrontier )
     {
         printf("{%d,%d,%d}",point[0],point[1],point[2]);
     }
@@ -361,8 +333,8 @@ int main()
     int a = 3;
     while(a > 0)
     {
-        int orientation = addT(&cube, cubeFroteier[0]);
-        updateFroteier(&cubeFroteier,&cubeExplored,orientation);
+        int orientation = addT(&cube, cubeFrontier [0]);
+        update (&cubeFrontier ,&cubeExplored,orientation);
         a--;
    }
 }
