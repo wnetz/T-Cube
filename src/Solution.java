@@ -1,15 +1,13 @@
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class Solution
 {
-    private int cube [][][];
+    private int[][][] cube;
     private ArrayList<Point> cubeFrontier, cubeExplored;
-    private FileWriter file;
-    public final int orientations [][][] =
+    public final int[][][] orientations =
             {
                     //          x1                        x2                        x3                         x4
                     {{1,0,0},{2,0,0},{1,1,0}},{{1,0,0},{2,0,0},{1,0,1}},{{1,0,0},{2,0,0},{1,-1,0}},{{1,0,0},{2,0,0},{1,0,-1}},
@@ -24,27 +22,22 @@ public class Solution
                     //          zc1                       zc2                       zc3                        zc4
                     {{-1,0,-1},{-1,0,0},{-1,0,1}},{{0,-1,-1},{0,-1,0},{0,-1,1}},{{1,0,-1},{1,0,0},{1,0,1}},{{0,1,-1},{0,1,0},{0,1,1}}
             };
-    public Solution(int  c[][][], FileWriter f)
+    public Solution(int[][][] c)
     {
-        file = f;
         cube = new int [6][c[0].length][6];
         for(int x = 0; x < c.length; x++)
         {
             for(int y = 0; y < c[x].length; y++)
             {
-                for(int z = 0; z < c[x][y].length; z++)
-                {
-                    cube[x][y][z] = c[x][y][z];
-                }
+                System.arraycopy(c[x][y], 0, cube[x][y], 0, c[x][y].length);
             }
         }
         cubeFrontier = new ArrayList<>();
         cubeFrontier.add(new Point(0,0,0));
         cubeExplored = new ArrayList<>();
     }
-    public Solution(ArrayList<Point> front, ArrayList<Point> expl, int  c[][][], FileWriter f)
+    public Solution(ArrayList<Point> front, ArrayList<Point> expl, int[][][] c)
     {
-        file = f;
         cube = new int [6][c[0].length][6];
         for(int x = 0; x < c.length; x++)
         {
@@ -57,45 +50,50 @@ public class Solution
             }
         }
         cubeFrontier = new ArrayList<>();
-        for(Point point: front)
-        {
-            cubeFrontier.add(point);
-        }
+        cubeFrontier.addAll(front);
         cubeExplored = new ArrayList<>();
-        for(Point point: expl)
-        {
-            cubeExplored.add(point);
-        }
+        cubeExplored.addAll(expl);
     }
     public int addT(Point point, int  ori) throws IOException
     {
         int orientation = ori;
-        file.write("addT "+ point + "\n");
+        Main.print("addT "+ point + "\n");
         for(int i = orientation+1; i < orientations.length; i++)
         {
-            file.write("orientation " + i + "\n");
+            //Main.print("try orientation: " + i + "\n");
             if(isOpen(orientations[i],point))
             {
-                file.write("in: " + i + "\n");
+                Main.print("in: " + i + "\n");
                 cube[point.getX()][point.getY()][point.getZ()] = i;
-                file.write("{"+point.getX() + "," + point.getY() + "," + point.getZ()+"} = "+i + "\n");
+                Main.print("{"+point.getX() + "," + point.getY() + "," + point.getZ()+"} = "+i + "\n");
                 for(int j = 0; j < 3; j++)
                 {
                     cube[point.getX() + orientations[i][j][0]][point.getY() + orientations[i][j][1]][point.getZ() + orientations[i][j][2]] = i;
-                    file.write("{"+point.getX() + orientations[i][j][0]+","+point.getY() + orientations[i][j][1]+","+point.getZ() + orientations[i][j][2]+"} = "+i + "\n");
+                    Main.print("{"+(point.getX() + orientations[i][j][0])+","+(point.getY() + orientations[i][j][1])+","+(point.getZ() + orientations[i][j][2])+"} = "+i + "\n");
                 }
                 orientation = i;
-                i = orientations.length;
+                break;
             }
         }
         if(orientation == ori)
         {
             return -2;
         }
-        file.write("orientation " + orientation + "\n");
+        Main.print("found orientation: " + orientation + "\n");
         return orientation;
     }
-    public boolean isOpen(int orientation[][], Point point) throws IOException
+    public void removeT(Point point,int orientation) throws IOException
+    {
+        Main.print("removeT "+ point + " orientation " + orientation + "\n");
+        cube[point.getX()][point.getY()][point.getZ()] = -1;
+        Main.print(point + " = "+-1 + "\n");
+        for(int j = 0; j < 3; j++)
+        {
+            cube[point.getX() + orientations[orientation][j][0]][point.getY() + orientations[orientation][j][1]][point.getZ() + orientations[orientation][j][2]] = -1;
+            Main.print("{"+(point.getX() + orientations[orientation][j][0])+","+(point.getY() + orientations[orientation][j][1])+","+(point.getZ() + orientations[orientation][j][2])+"} = "+-1 + "\n");
+        }
+    }
+    public boolean isOpen(int[][] orientation, Point point) throws IOException
     {
         boolean in = true;
         boolean open = true;
@@ -117,34 +115,37 @@ public class Solution
             {
                 if(cube[orientation[i][0] + point.getX()][orientation[i][1] + point.getY()][orientation[i][2] + point.getZ()] != -1)
                 {
-                    file.write("colision at {" + orientation[i][0] + point.getX() + ", " + orientation[i][1] + point.getY() + ", " + orientation[i][2] + point.getZ() + "}\n");
+                    //Main.print("colision at {" + (orientation[i][0] + point.getX()) + ", " + (orientation[i][1] + point.getY()) + ", " + (orientation[i][2] + point.getZ()) + "}\n");
                     open = false;
+                    break;
                 }
             }
             else
             {
-                file.write("out at {" + orientation[i][0] + point.getX() + ", " + orientation[i][1] + point.getY() + ", " + orientation[i][2] + point.getZ() + "}\n");
+                //Main.print("out at {" + (orientation[i][0] + point.getX()) + ", " + (orientation[i][1] + point.getY()) + ", " + (orientation[i][2] + point.getZ() )+ "}\n");
+
+                break;
             }
         }
         return (open && in);
     }
-    public void update(int orientation) throws IOException
+    public void update(Point point, int orientation) throws IOException
     {
         //get all new explored points
         ArrayList<Point> newExplored = new ArrayList<>();
-        newExplored.add(cubeFrontier.get(0));
+        newExplored.add(point);
         for(int i = 0; i < orientations[orientation].length; i++)
         {
-            newExplored.add(new Point(newExplored.get(0).getX() + orientations[orientation][i][0],
-                    newExplored.get(0).getY() + orientations[orientation][i][1],
-                    newExplored.get(0).getZ() + orientations[orientation][i][2]));
+            newExplored.add(new Point(point.getX() + orientations[orientation][i][0],
+                    point.getY() + orientations[orientation][i][1],
+                    point.getZ() + orientations[orientation][i][2]));
         }
-        file.write("newExplored :");
-        for(Point point :newExplored)
+        Main.print("newExplored :");
+        for(Point p :newExplored)
         {
-            file.write( "{"+point.getX()+","+point.getY()+","+point.getZ()+"}");
+            Main.print(p.toString());
         }
-        file.write("\n");
+        Main.print("\n");
 
         updateExplored(newExplored);
         updateFrontier(newExplored);
@@ -152,62 +153,27 @@ public class Solution
     public void updateExplored (ArrayList<Point> newExplored) throws IOException
     {
         //add newExplored points to explored
-        int index = 0;
-        if(cubeExplored.size() == 0)
-        {
-            file.write("0 cubeExplored\n");
-            cubeExplored.addAll(newExplored);
-        }
-        else
-        {
-            for(Point newPoint : newExplored)
-            {
-                boolean in = false;
-                for(Point point : cubeExplored)
-                {
-                    in = in || newPoint.equals(point);
-                }
-                if(!in)
-                {
-                    cubeExplored.add(newPoint);
-                    index --;
-                }
-                index ++;
-            }
-        }
-        file.write("explored + newExplored:");
+
+        cubeExplored.addAll(newExplored);
+        cubeExplored = (ArrayList<Point>) cubeExplored.stream().distinct().collect(Collectors.toList());
+        Main.print("explored + newExplored:");
         for(Point point :cubeExplored)
         {
-            file.write(point.toString());
+            Main.print(point.toString());
         }
-        file.write("\n");
+        Main.print("\n");
     }
     public void updateFrontier (ArrayList<Point> newExplored) throws IOException
     {
         //remove newExplored points from frontier
-        for(int i = 0; i < cubeFrontier.size(); i++)
-        {
-            boolean in = false;
-            for(Point point : newExplored)
-            {
-                if(cubeFrontier.get(i) == point)
-                {
-                    in = in || cubeFrontier.get(i).equals(point);
-                }
-            }
-            if(in)
-            {
-                cubeFrontier.remove(i);
-                i --;
-            }
-        }
+        cubeFrontier.removeAll(newExplored);
 
-        file.write("frontier -  newExplored:" + "\n");
+        Main.print("frontier -  newExplored:" + "\n");
         for(Point point :cubeFrontier)
         {
-            file.write(point.toString());
+            Main.print(point.toString());
         }
-        file.write("\n");
+        Main.print("\n");
 
         //get all possible new frontier points in range
         ArrayList<Point> newFrontier = new ArrayList<>();
@@ -239,69 +205,57 @@ public class Solution
                 newFrontier.add(new Point(point.getX(), point.getY(), point.getZ() - 1));
             }
         }
-
-        file.write("newFrontier:");
+        newFrontier = (ArrayList<Point>) newFrontier.stream().distinct().collect(Collectors.toList());
+        Main.print("newFrontier:");
         for(Point point :newFrontier)
         {
-            file.write(point.toString());
+            Main.print(point.toString());
         }
-        file.write("\n");
+        Main.print("\n");
 
         //remove explored points from newFrontier
-        for(int i = 0; i < newFrontier.size(); i++)
-        {
-            boolean in = false;
-            for(Point point : cubeExplored)
-            {
-                in = in || newFrontier.get(i).equals(point);
-            }
-            if(in)
-            {
-                newFrontier.remove(i);
-                i --;
-            }
-        }
+        newFrontier.removeAll(cubeExplored);
 
-        file.write("newFrontier - explored:");
+        Main.print("newFrontier - explored:");
         for(Point point :newFrontier)
         {
-            file.write(point.toString());
+            Main.print(point.toString());
         }
-        file.write("\n");
+        Main.print("\n");
 
         //add newFrontier points to frontier
-        if(cubeFrontier.size() == 0)
-        {
-            file.write( "0 cubeFrontier" + "\n");
-            cubeFrontier.addAll(newFrontier);
-        }
-        else
-        {
-            for(Point newPoint : newFrontier)
-            {
-                boolean in = false;
-                for(Point point : cubeFrontier)
-                {
-                    in = in || newPoint.equals(point);
-                }
-                if(!in)
-                {
-                    cubeFrontier.add(newPoint);
-                }
-            }
-        }
-        file.write("frontier + newFrontier:");
+        cubeFrontier.addAll(newFrontier);
+        //cubeFrontier = (ArrayList<Point>) cubeFrontier.stream().distinct().collect(Collectors.toList());
+        cubeFrontier = (ArrayList<Point>) cubeFrontier.stream().distinct().sorted().collect(Collectors.toList());
+        Main.print("frontier + newFrontier:");
         for(Point point :cubeFrontier)
         {
-            file.write("{"+point.getX()+","+point.getY()+","+point.getZ()+"}");
+            Main.print(point.toString());
         }
-        file.write("\n");
+        Main.print("\n");
     }
-    public Point getNext()
-    {
-        return cubeFrontier.size() > 0 ? cubeFrontier.get(0) : null;
-    }
+
+
     public int[][][] getCube() {
         return cube;
     }
+    public ArrayList<Point> getCubeFrontier()
+    {
+        return (ArrayList<Point>) cubeFrontier.stream().map(p -> new Point(p.getX(), p.getY(), p.getZ())).collect(Collectors.toList());
+    }
+    public ArrayList<Point> getCubeExplored()
+    {
+        return (ArrayList<Point>) cubeExplored.stream().map(p -> new Point(p.getX(), p.getY(), p.getZ())).collect(Collectors.toList());
+    }
+
+    public void setCubeExplored(ArrayList<Point> cubeExplored)
+    {
+        this.cubeExplored = (ArrayList<Point>) cubeExplored.stream().map(p -> new Point(p.getX(), p.getY(), p.getZ())).collect(Collectors.toList());
+    }
+    public void setCubeFrontier(ArrayList<Point> cubeFrontier)
+    {
+        this.cubeFrontier = (ArrayList<Point>) cubeFrontier.stream().map(p -> new Point(p.getX(), p.getY(), p.getZ())).collect(Collectors.toList());
+    }
+
+    
 }
