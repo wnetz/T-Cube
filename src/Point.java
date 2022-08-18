@@ -36,14 +36,15 @@ public class Point implements Comparable
     @Override
     public int compareTo(Object obj) {
         if(obj instanceof Point)
-            if(((Point) obj).x != x )
+            return x + y + z - ((Point) obj).x - ((Point) obj).y - ((Point) obj).z;
+            /*if(((Point) obj).x != x )
                 return x-((Point) obj).x;
             else if(((Point) obj).y != y )
                 return y-((Point) obj).y;
             else if(((Point) obj).z != z )
                 return z-((Point) obj).z;
             else
-                return 0;
+                return 0;*/
         return 0;
     }
 
