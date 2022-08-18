@@ -8,18 +8,30 @@ public class SolutionState
     private ArrayList<Point> cubeFrontier, cubeExplored, lastFrontier, lastExplored;
     public final int[][][] orientations =
             {
-                    //          x1                        x2                        x3                         x4
-                    {{1,0,0},{2,0,0},{1,1,0}},{{1,0,0},{2,0,0},{1,0,1}},{{1,0,0},{2,0,0},{1,-1,0}},{{1,0,0},{2,0,0},{1,0,-1}},
-                    //          y1                        y2                        y3                         y4
-                    {{0,1,0},{0,2,0},{1,1,0}},{{0,1,0},{0,2,0},{0,1,1}},{{0,1,0},{0,2,0},{-1,1,0}},{{0,1,0},{0,2,0},{0,1,-1}},
-                    //          z1                        z2                        z3                         z4
-                    {{0,0,1},{0,0,2},{1,0,1}},{{0,0,1},{0,0,2},{0,1,1}},{{0,0,1},{0,0,2},{-1,0,1}},{{0,0,1},{0,0,2},{0,-1,1}},
-                    //          xc1                       xc2                       xc3                        xc4
-                    {{-1,-1,0},{0,-1,0},{1,-1,0}},{{-1,0,-1},{0,0,-1},{1,0,-1}},{{-1,1,0},{0,1,0},{1,1,0}},{{-1,0,1},{0,0,1},{1,0,1}},
-                    //          yc1                       yc2                       yc3                        yc4
-                    {{-1,-1,0},{-1,0,0},{-1,1,0}},{{0,-1,-1},{0,0,-1},{0,1,-1}},{{1,-1,0},{1,0,0},{1,1,0}},{{0,-1,1},{0,0,1},{0,1,1}},
-                    //          zc1                       zc2                       zc3                        zc4
-                    {{-1,0,-1},{-1,0,0},{-1,0,1}},{{0,-1,-1},{0,-1,0},{0,-1,1}},{{1,0,-1},{1,0,0},{1,0,1}},{{0,1,-1},{0,1,0},{0,1,1}}
+                    //             x1:0                               x2:1                               x3:2                               x4:3
+                    {{ 1, 0, 0},{ 2, 0, 0},{ 1, 1, 0}},{{ 1, 0, 0},{ 2, 0, 0},{ 1, 0, 1}},{{ 1, 0, 0},{ 2, 0, 0},{ 1,-1, 0}},{{ 1, 0, 0},{ 2, 0, 0},{ 1, 0,-1}},
+                    //             y1:4                               y2:5                               y3:6                               y4:7
+                    {{ 0, 1, 0},{ 0, 2, 0},{ 1, 1, 0}},{{ 0, 1, 0},{ 0, 2, 0},{ 0, 1, 1}},{{ 0, 1, 0},{ 0, 2, 0},{-1, 1, 0}},{{ 0, 1, 0},{ 0, 2, 0},{0 , 1,-1}},
+                    //             z1:8                               z2:9                               z3:10                              z4:11
+                    {{ 0, 0, 1},{ 0, 0, 2},{ 1, 0, 1}},{{ 0, 0, 1},{ 0, 0, 2},{ 0, 1, 1}},{{ 0, 0, 1},{ 0, 0, 2},{-1, 0, 1}},{{ 0, 0, 1},{ 0, 0, 2},{ 0,-1, 1}},
+                    //            xh1:12                             xh2:13                             xh3:14                             xh4:15
+                    {{-1,-1, 0},{ 0,-1, 0},{ 1,-1, 0}},{{-1, 0,-1},{ 0, 0,-1},{ 1, 0,-1}},{{-1, 1, 0},{ 0, 1, 0},{ 1, 1, 0}},{{-1, 0, 1},{ 0, 0, 1},{ 1, 0, 1}},
+                    //            yh1:16                             yh2:17                             yh3:18                             yh4:19
+                    {{-1,-1, 0},{-1, 0, 0},{-1, 1, 0}},{{ 0,-1,-1},{ 0, 0,-1},{0 , 1,-1}},{{ 1,-1, 0},{ 1, 0, 0},{ 1, 1, 0}},{{ 0,-1, 1},{ 0, 0, 1},{ 0, 1, 1}},
+                    //            zh1:20                             zh2:21                             zh3:22                             zh4:23
+                    {{-1, 0,-1},{-1, 0, 0},{-1, 0, 1}},{{ 0,-1,-1},{ 0,-1, 0},{ 0,-1, 1}},{{ 1, 0,-1},{ 1, 0, 0},{ 1, 0, 1}},{{0 , 1,-1},{ 0, 1, 0},{ 0, 1, 1}},
+                    //            x12:24                             x22:25                             x32:26                             x42:27
+                    {{-1, 0, 0},{-2, 0, 0},{-1, 1, 0}},{{-1, 0, 0},{-2, 0, 0},{-1, 0, 1}},{{-1, 0, 0},{-2, 0, 0},{-1,-1, 0}},{{-1, 0, 0},{-2, 0, 0},{-1, 0,-1}},
+                    //            y12:28                             y22:29                             y32:30                             y42:31
+                    {{ 0,-1, 0},{ 0,-2, 0},{ 1,-1, 0}},{{ 0,-1, 0},{ 0,-2, 0},{ 0,-1, 1}},{{ 0,-1, 0},{ 0,-2, 0},{-1,-1, 0}},{{ 0,-1, 0},{ 0,-2, 0},{ 0,-1,-1}},
+                    //            z12:32                             z22:33                             z32:34                             z42:35
+                    {{ 0, 0,-1},{ 0, 0,-2},{ 1, 0,-1}},{{ 0, 0,-1},{ 0, 0,-2},{ 0, 1,-1}},{{ 0, 0,-1},{ 0, 0,-2},{-1, 0,-1}},{{ 0, 0,-1},{ 0, 0,-2},{ 0,-1,-1}},
+                    //            xc1:36                             xc2:37                             xc3:38                             xc4:39
+                    {{-1, 0, 0},{ 0, 1, 0},{ 1, 0, 0}},{{-1, 0, 0},{ 0, 0, 1},{ 1, 0, 0}},{{-1, 0, 0},{ 0,-1, 0},{ 1, 0, 0}},{{-1, 0, 0},{ 0, 0,-1},{ 1, 0, 0}},
+                    //            yc1:40                             yc2:41                             yc3:42                             yc4:43
+                    {{ 0,-1, 0},{ 1, 0, 0},{ 0, 1, 0}},{{ 0,-1, 0},{ 0, 0, 1},{ 0, 1, 0}},{{ 0,-1, 0},{-1, 0, 0},{ 0, 1, 0}},{{ 0,-1, 0},{ 0, 0,-1},{ 0, 1, 0}},
+                    //            zc1:44                             zc2:45                             zc3:46                             zc4:47
+                    {{ 0, 0,-1},{ 1, 0, 0},{ 0, 0, 1}},{{ 0, 0,-1},{ 0, 1, 0},{ 0, 0, 1}},{{ 0, 0,-1},{-1, 0, 0},{ 0, 0, 1}},{{ 0, 0,-1},{ 0,-1, 0},{ 0, 0, 1}},
             };
     public SolutionState(int[][][] c)
     {
@@ -58,60 +70,62 @@ public class SolutionState
     {
         int orientation = ori;
         ArrayList<Point> points = null;
-        Main.print("addT "+ point + "\n");
+        //Main.print("addT "+ point + "\n");
         for(int i = orientation+1; i < orientations.length; i++)
         {
-            //Main.print("try orientation: " + i + "\n");
+            ////Main.print("try orientation: " + i + "\n");
             points = isOpen(orientations[i],point);
             if(points != null)
             {
-                Main.print("in: " + i + "\n");
-                cube[point.getX()][point.getY()][point.getZ()] = i;
-                Main.print("{"+point.getX() + "," + point.getY() + "," + point.getZ()+"} = "+i + "\n");
-                for(int j = 0; j < 3; j++)
+                //Main.print("in: " + i + "\n");
+                for(Point p: points)
                 {
-                    cube[point.getX() + orientations[i][j][0]][point.getY() + orientations[i][j][1]][point.getZ() + orientations[i][j][2]] = i;
-                    Main.print("{"+(point.getX() + orientations[i][j][0])+","+(point.getY() + orientations[i][j][1])+","+(point.getZ() + orientations[i][j][2])+"} = "+i + "\n");
+                    cube[p.getX()][p.getY()][p.getZ()] = i;
+                    //Main.print("{"+p.getX() + "," + p.getY() + "," + p.getZ()+"} = "+i + "\n");
                 }
-                orientation = i;
-                break;
+
+                //Main.print("found orientation: " + i + "\n");
+                update(points);
+                if(problems())
+                {
+                    removeT(points);
+                    cubeExplored.clear();
+                    cubeExplored.addAll(lastExplored);
+                    cubeFrontier.clear();
+                    cubeFrontier.addAll(lastFrontier);
+                }
+                else
+                {
+                    orientation = i;
+                    break;
+                }
             }
         }
         if(orientation == ori)
         {
             return -2;
         }
-        Main.print("found orientation: " + orientation + "\n");
-        update(points);
-        /*if(problems())
-        {
-            removeT(points);
-            cubeExplored.clear();
-            cubeExplored.addAll(lastExplored);
-            cubeFrontier.clear();
-            cubeFrontier.addAll(lastFrontier);
-            return -2;
-        }*/
+
         return orientation;
     }
     public void removeT(Point point,int orientation) throws IOException
     {
-        Main.print("removeT "+ point + " orientation " + orientation + "\n");
+        //Main.print("removeT "+ point + " orientation " + orientation + "\n");
         cube[point.getX()][point.getY()][point.getZ()] = -1;
-        Main.print(point + " = "+-1 + "\n");
+        //Main.print(point + " = "+-1 + "\n");
         for(int j = 0; j < 3; j++)
         {
             cube[point.getX() + orientations[orientation][j][0]][point.getY() + orientations[orientation][j][1]][point.getZ() + orientations[orientation][j][2]] = -1;
-            Main.print("{"+(point.getX() + orientations[orientation][j][0])+","+(point.getY() + orientations[orientation][j][1])+","+(point.getZ() + orientations[orientation][j][2])+"} = "+-1 + "\n");
+            //Main.print("{"+(point.getX() + orientations[orientation][j][0])+","+(point.getY() + orientations[orientation][j][1])+","+(point.getZ() + orientations[orientation][j][2])+"} = "+-1 + "\n");
         }
     }
     public void removeT(ArrayList<Point> points) throws IOException
     {
-        Main.print("removeT "+ points + "\n");
+        //Main.print("removeT "+ points + "\n");
         for(Point point: points)
         {
             cube[point.getX()][point.getY()][point.getZ()] = -1;
-            Main.print(point + " = "+-1 + "\n");
+            //Main.print(point + " = "+-1 + "\n");
         }
     }
     public ArrayList<Point> isOpen(int[][] orientation, Point point) throws IOException
@@ -143,12 +157,12 @@ public class SolutionState
     }
     public void update(ArrayList<Point> points) throws IOException
     {
-        Main.print("newExplored :");
+        //Main.print("newExplored :");
         for(Point p :points)
         {
-            Main.print(p.toString());
+            //Main.print(p.toString());
         }
-        Main.print("\n");
+        //Main.print("\n");
 
         updateExplored(points);
         updateFrontier(points);
@@ -160,12 +174,12 @@ public class SolutionState
         lastExplored.addAll(cubeExplored);
         cubeExplored.addAll(newExplored);
         cubeExplored = (ArrayList<Point>) cubeExplored.stream().distinct().collect(Collectors.toList());
-        Main.print("explored + newExplored:");
+        //Main.print("explored + newExplored:");
         for(Point point :cubeExplored)
         {
-            Main.print(point.toString());
+            //Main.print(point.toString());
         }
-        Main.print("\n");
+        //Main.print("\n");
     }
     public void updateFrontier (ArrayList<Point> newExplored) throws IOException
     {
@@ -174,12 +188,12 @@ public class SolutionState
         //remove newExplored points from frontier
         /*cubeFrontier.removeAll(newExplored);
 
-        Main.print("frontier -  newExplored:" + "\n");
+        //Main.print("frontier -  newExplored:" + "\n");
         for(Point point :cubeFrontier)
         {
-            Main.print(point.toString());
+            //Main.print(point.toString());
         }
-        Main.print("\n");*/
+        //Main.print("\n");*/
 
         //get all possible new frontier points in range
         ArrayList<Point> newFrontier = new ArrayList<>();
@@ -212,33 +226,33 @@ public class SolutionState
             }
         }
         newFrontier = (ArrayList<Point>) newFrontier.stream().distinct().collect(Collectors.toList());
-        /*Main.print("newFrontier:");
+        /*//Main.print("newFrontier:");
         for(Point point :newFrontier)
         {
-            Main.print(point.toString());
+            //Main.print(point.toString());
         }
-        Main.print("\n");*/
+        //Main.print("\n");*/
 
         //remove explored points from newFrontier
 
-        /*Main.print("newFrontier - explored:");
+        /*//Main.print("newFrontier - explored:");
         for(Point point :newFrontier)
         {
-            Main.print(point.toString());
+            //Main.print(point.toString());
         }
-        Main.print("\n");*/
+        //Main.print("\n");*/
 
         //add newFrontier points to frontier
         cubeFrontier.addAll(newFrontier);
         cubeFrontier.removeAll(cubeExplored);
         //cubeFrontier = (ArrayList<Point>) cubeFrontier.stream().distinct().collect(Collectors.toList());
         cubeFrontier = (ArrayList<Point>) cubeFrontier.stream().distinct().sorted().collect(Collectors.toList());
-        Main.print("frontier + newFrontier:");
+        //Main.print("frontier + newFrontier:");
         for(Point point :cubeFrontier)
         {
-            Main.print(point.toString());
+            //Main.print(point.toString());
         }
-        Main.print("\n");
+        //Main.print("\n");
     }
     public boolean problems() throws IOException
     {
@@ -246,7 +260,7 @@ public class SolutionState
         {
             if(!isOpen(point))
             {
-                System.out.println("POINT" + point);
+                //Main.print("Problem at " + point + "\n");
                 return true;
             }
         }

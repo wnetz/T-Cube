@@ -6,7 +6,7 @@ import java.util.PriorityQueue;
 public class Solve
 {
     public final int PRINT_TO;
-    public final int HEIGHT = 3;
+    public final int HEIGHT = 2;
 
     FileWriter solutionFile;
     FileWriter file;
@@ -23,9 +23,9 @@ public class Solve
         solutions = new ArrayList<>();
         int[][][] cube = new int [6][HEIGHT][6];
         for(int x = 0; x < 6; x++)
-        for(int y = 0; y < HEIGHT; y++)
-            for(int z = 0; z < 6; z++)
-                cube[x][y][z] = -1;
+            for(int y = 0; y < HEIGHT; y++)
+                for(int z = 0; z < 6; z++)
+                    cube[x][y][z] = -1;
 
         System.out.println("start");
         time = System.nanoTime();
@@ -206,11 +206,11 @@ public class Solve
         ArrayList<Point> oldCubeFrontier = solution.getCubeFrontier();
         ArrayList<Point> oldCubeExplored = solution.getCubeExplored();
 
-        Main.print("depth: " + depth + "\n");
+        //Main.print("depth: " + depth + "\n");
         //try every point in the frontier
         for(Point point : oldCubeFrontier)
         {
-            Main.print("rotation: " + rotation++ + "\n");
+            //Main.print("rotation: " + rotation++ + "\n");
 
             int orientation = -1;
             //try every orientation on point
@@ -218,11 +218,11 @@ public class Solve
             {
                 orientation = solution.addT(point, orientation);
 
-                Main.print("orientation: " + orientation + "\n");
+                //Main.print("orientation: " + orientation + "\n");
                 //if a T fits
                 if (orientation != -2)
                 {
-                    printCube(solution.getCube(),file);
+                    //printCube(solution.getCube(),file);
 
                     if (solution.getCubeFrontier().size() > 0)
                     {
@@ -231,7 +231,7 @@ public class Solve
                         solution.removeT(point, orientation);
                         solution.setCubeFrontier(oldCubeFrontier);
                         solution.setCubeExplored(oldCubeExplored);
-                        if(result!=null)
+                        /*if(result!=null)
                         {
                             //return until problem solved
                             if(!solution.isOpen(result))
@@ -247,14 +247,18 @@ public class Solve
                         }
                         else
                         {
-                            Main.print("out depth: " + depth + "\n");
-                        }
+                            //Main.print("out depth: " + depth + "\n");
+                        }*/
                     }
                     else
                     {
                         solutions.add(solution.getCube());
-                        System.out.println("solution");
-                        printCube(solution.getCube(),solutionFile);
+                        if(solutions.size()%1000 ==0)
+                        {
+
+                            System.out.println("solutions " + solutions.size() + " " + (System.nanoTime()-time)/60000000000.0);
+                        }
+                        //printCube(solution.getCube(),solutionFile);
                     }
                 }
                 else
