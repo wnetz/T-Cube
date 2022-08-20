@@ -79,7 +79,7 @@ public class SolutionState
                 //Main.print("in: " + i + "\n");
                 for(Point p: points)
                 {
-                    cube[p.x()][p.y()][p.z()] = i;
+                    cube[p.x()][p.y()][p.z()] = i%12;
                     //Main.print("{"+p.getX() + "," + p.getY() + "," + p.getZ()+"} = "+i + "\n");
                 }
 
