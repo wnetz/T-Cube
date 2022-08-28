@@ -1,16 +1,18 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Solve
 {
     public final int PRINT_TO;
-    public final int HEIGHT =2;
+    public final int HEIGHT = 4;
     ArrayList<int[][][]> deadEnd;
     FileWriter solutionFile;
     FileWriter file;
     long time;
     int dead = 0;
+    int kill = 0;
     static ArrayList<int[][][]> solutions;
     
     public Solve(int p, FileWriter f) throws IOException
@@ -62,12 +64,16 @@ public class Solve
         System.out.println("copies removed: " + removed);
         for(int i = 0; i < solutions.size(); i++)
             printCube(solutions.get(i),solutionFile);
-        System.out.println("dead:" + deadEnd.size() + " " + dead);
+        System.out.println("killed: " + kill);
+        System.out.println("dead: " + deadEnd.size() + " " + dead);
         solutionFile.close();
     }
 
-
-
+    public ArrayList<int[][][]> readSolutions()
+    {
+        ArrayList<int[][][]> solutions = new ArrayList<>();
+        return solutions;
+    }
     public  void printCube(int[][][] cube)
     {
         for (int i = 0; i < HEIGHT; i++)
@@ -90,7 +96,7 @@ public class Solve
             }
             System.out.print(layer + "\n");
         }
-        System.out.print("########################################################\n\n");
+        System.out.print("########################################################\n");
     }
     public  void printCube(int[][][] cube, FileWriter file) throws IOException
     {
@@ -120,9 +126,9 @@ public class Solve
                 System.out.print(layer + "\n");
         }
         if (PRINT_TO != 0)
-            file.write("########################################################\n\n");
+            file.write("########################################################\n");
         else
-            System.out.print("########################################################\n\n");
+            System.out.print("########################################################\n");
     }
     public  boolean cubeCopy(int[][][] c1, int[][][] c2)
     {
@@ -1057,802 +1063,6 @@ public class Solve
                         default -> -1;
                     };      //00 : xxy,  xyz,  xzx,  yzz,  zxz
 
-
-                    /*//yz : 00
-                    //yz : x
-                    //yz : xx
-                    //yz : xxx
-                    //yz : xxy
-                    //yz : xxz
-                    //yz : xy
-                    //yz : xyx
-                    //yz : xyy
-                    //yz : xyz
-                    //yz : xz
-                    //yz : xzx
-                    //yz : xzy
-                    //yz : xzz
-                    //yz : y
-                    //yz : yx
-                    //yz : yxx
-                    //yz : yxy
-                    //yz : yxz
-                    //yz : yy
-                    //yz : yyx
-                    //yz : yyy
-                    //yz : yyz
-                    //yz : yz
-                    //yz : yzx
-                    //yz : yzy
-                    //yz : yzz
-                    //yz : z
-                    //yz : zx
-                    //yz : zxx
-                    //yz : zxy
-                    //yz : zxz
-                    //yz : zy
-                    //yz : zyx
-                    //yz : zyy
-                    //yz : zyz
-                    //yz : zz
-                    //yz : zzx
-                    //yz : zzy
-                    //yz : zzz*/
-
-                    /*//xy,xz : 00
-                    //xy,xz : x
-                    //xy,xz : xx
-                    //xy,xz : xxx
-                    //xy,xz : xxy
-                    //xy,xz : xxz
-                    //xy,xz : xy
-                    //xy,xz : xyx
-                    //xy,xz : xyy
-                    //xy,xz : xyz
-                    //xy,xz : xz
-                    //xy,xz : xzx
-                    //xy,xz : xzy
-                    //xy,xz : xzz
-                    //xy,xz : y
-                    //xy,xz : yx
-                    //xy,xz : yxx
-                    //xy,xz : yxy
-                    //xy,xz : yxz
-                    //xy,xz : yy
-                    //xy,xz : yyx
-                    //xy,xz : yyy
-                    //xy,xz : yyz
-                    //xy,xz : yz
-                    //xy,xz : yzx
-                    //xy,xz : yzy
-                    //xy,xz : yzz
-                    //xy,xz : z
-                    //xy,xz : zx
-                    //xy,xz : zxx
-                    //xy,xz : zxy
-                    //xy,xz : zxz
-                    //xy,xz : zy
-                    //xy,xz : zyx
-                    //xy,xz : zyy
-                    //xy,xz : zyz
-                    //xy,xz : zz
-                    //xy,xz : zzx
-                    //xy,xz : zzy
-                    //xy,xz : zzz*/
-
-                    /*//xz,yz : 00
-                    //xz,yz : x
-                    //xz,yz : xx
-                    //xz,yz : xxx
-                    //xz,yz : xxy
-                    //xz,yz : xxz
-                    //xz,yz : xy
-                    //xz,yz : xyx
-                    //xz,yz : xyy
-                    //xz,yz : xyz
-                    //xz,yz : xz
-                    //xz,yz : xzx
-                    //xz,yz : xzy
-                    //xz,yz : xzz
-                    //xz,yz : y
-                    //xz,yz : yx
-                    //xz,yz : yxx
-                    //xz,yz : yxy
-                    //xz,yz : yxz
-                    //xz,yz : yy
-                    //xz,yz : yyx
-                    //xz,yz : yyy
-                    //xz,yz : yyz
-                    //xz,yz : yz
-                    //xz,yz : yzx
-                    //xz,yz : yzy
-                    //xz,yz : yzz
-                    //xz,yz : z
-                    //xz,yz : zx
-                    //xz,yz : zxx
-                    //xz,yz : zxy
-                    //xz,yz : zxz
-                    //xz,yz : zy
-                    //xz,yz : zyx
-                    //xz,yz : zyy
-                    //xz,yz : zyz
-                    //xz,yz : zz
-                    //xz,yz : zzx
-                    //xz,yz : zzy
-                    //xz,yz : zzz*/
-
-                    /*//yz,xy : 00
-                    //yz,xy : x
-                    //yz,xy : xx
-                    //yz,xy : xxx
-                    //yz,xy : xxy
-                    //yz,xy : xxz
-                    //yz,xy : xy
-                    //yz,xy : xyx
-                    //yz,xy : xyy
-                    //yz,xy : xyz
-                    //yz,xy : xz
-                    //yz,xy : xzx
-                    //yz,xy : xzy
-                    //yz,xy : xzz
-                    //yz,xy : y
-                    //yz,xy : yx
-                    //yz,xy : yxx
-                    //yz,xy : yxy
-                    //yz,xy : yxz
-                    //yz,xy : yy
-                    //yz,xy : yyx
-                    //yz,xy : yyy
-                    //yz,xy : yyz
-                    //yz,xy : yz
-                    //yz,xy : yzx
-                    //yz,xy : yzy
-                    //yz,xy : yzz
-                    //yz,xy : z
-                    //yz,xy : zx
-                    //yz,xy : zxx
-                    //yz,xy : zxy
-                    //yz,xy : zxz
-                    //yz,xy : zy
-                    //yz,xy : zyx
-                    //yz,xy : zyy
-                    //yz,xy : zyz
-                    //yz,xy : zz
-                    //yz,xy : zzx
-                    //yz,xy : zzy
-                    //yz,xy : zzz*/
-
-                    /*//xy,xz,yz : 00
-                    //xy,xz,yz : x
-                    //xy,xz,yz : xx
-                    //xy,xz,yz : xxx
-                    //xy,xz,yz : xxy
-                    //xy,xz,yz : xxz
-                    //xy,xz,yz : xy
-                    //xy,xz,yz : xyx
-                    //xy,xz,yz : xyy
-                    //xy,xz,yz : xyz
-                    //xy,xz,yz : xz
-                    //xy,xz,yz : xzx
-                    //xy,xz,yz : xzy
-                    //xy,xz,yz : xzz
-                    //xy,xz,yz : y
-                    //xy,xz,yz : yx
-                    //xy,xz,yz : yxx
-                    //xy,xz,yz : yxy
-                    //xy,xz,yz : yxz
-                    //xy,xz,yz : yy
-                    //xy,xz,yz : yyx
-                    //xy,xz,yz : yyy
-                    //xy,xz,yz : yyz
-                    //xy,xz,yz : yz
-                    //xy,xz,yz : yzx
-                    //xy,xz,yz : yzy
-                    //xy,xz,yz : yzz
-                    //xy,xz,yz : z
-                    //xy,xz,yz : zx
-                    //xy,xz,yz : zxx
-                    //xy,xz,yz : zxy
-                    //xy,xz,yz : zxz
-                    //xy,xz,yz : zy
-                    //xy,xz,yz : zyx
-                    //xy,xz,yz : zyy
-                    //xy,xz,yz : zyz
-                    //xy,xz,yz : zz
-                    //xy,xz,yz : zzx
-                    //xy,xz,yz : zzy
-                    //xy,xz,yz : zzz*/
-
-
-
-                    /*perms.get(16)[x][y][z] = switch (cube[x][y][z]){
-                        case 0 -> 0;
-                        case 1 -> 1;
-                        case 2 -> 2;
-                        case 3 -> 3;
-                        case 4 -> 4;
-                        case 5 -> 5;
-                        case 6 -> 6;
-                        case 7 -> 7;
-                        case 8 -> 8;
-                        case 9 -> 9;
-                        case 10-> 10;
-                        case 11-> 11;
-                        default -> -1;
-                    };//yz,xy:1d:yy
-                    perms.get(17)[x][y][z] = switch (cube[x][y][z]){
-                        case 0 -> 0;
-                        case 1 -> 1;
-                        case 2 -> 2;
-                        case 3 -> 3;
-                        case 4 -> 4;
-                        case 5 -> 5;
-                        case 6 -> 6;
-                        case 7 -> 7;
-                        case 8 -> 8;
-                        case 9 -> 9;
-                        case 10-> 10;
-                        case 11-> 11;
-                        default -> -1;
-                    };//xz,yz:6u:zz
-                    perms.get(18)[x][y][z] = switch (cube[x][y][z]){
-                        case 0 -> 0;
-                        case 1 -> 1;
-                        case 2 -> 2;
-                        case 3 -> 3;
-                        case 4 -> 4;
-                        case 5 -> 5;
-                        case 6 -> 6;
-                        case 7 -> 7;
-                        case 8 -> 8;
-                        case 9 -> 9;
-                        case 10-> 10;
-                        case 11-> 11;
-                        default -> -1;
-                    };//xy,xz:6d:xx
-                    perms.get(19)[x][y][z] = switch (cube[z][y][x]){
-                        case 0 -> 9;
-                        case 1 -> 10;
-                        case 2 -> 11;
-                        case 3 -> 8;
-                        case 4 -> 7;
-                        case 5 -> 6;
-                        case 6 -> 5;
-                        case 7 -> 4;
-                        case 8 -> 3;
-                        case 9 -> 0;
-                        case 10-> 1;
-                        case 11-> 2;
-                        default -> -1;
-                    };//yz:1r:yyy
-                    perms.get(20)[x][y][z] = switch (cube[z][y][x]){
-                        case 0 -> 9;
-                        case 1 -> 10;
-                        case 2 -> 11;
-                        case 3 -> 8;
-                        case 4 -> 7;
-                        case 5 -> 6;
-                        case 6 -> 5;
-                        case 7 -> 4;
-                        case 8 -> 3;
-                        case 9 -> 0;
-                        case 10-> 1;
-                        case 11-> 2;
-                        default -> -1;
-                    };//xz:6l:zzy
-                    perms.get(21)[x][y][z] = switch (cube[-(x-cube.length+1)][y][z]){
-                        case 0 -> 0;
-                        case 1 -> 1;
-                        case 2 -> 2;
-                        case 3 -> 3;
-                        case 4 -> 6;
-                        case 5 -> 5;
-                        case 6 -> 4;
-                        case 7 -> 7;
-                        case 8 -> 10;
-                        case 9 -> 9;
-                        case 10-> 8;
-                        case 11-> 11;
-                        default -> -1;
-                    };//xy:1d:yy
-                    perms.get(22)[x][y][z] = switch (cube[-(x-cube.length+1)][y][z]){
-                        case 0 -> 0;
-                        case 1 -> 1;
-                        case 2 -> 2;
-                        case 3 -> 3;
-                        case 4 -> 6;
-                        case 5 -> 5;
-                        case 6 -> 4;
-                        case 7 -> 7;
-                        case 8 -> 10;
-                        case 9 -> 9;
-                        case 10-> 8;
-                        case 11-> 11;
-                        default -> -1;
-                    };//xz:6u:zz
-                    perms.get(23)[x][y][z] = switch (cube[z][y][-(x-cube.length+1)]){
-                        case 0 -> 9;
-                        case 1 -> 10;
-                        case 2 -> 11;
-                        case 3 -> 8;
-                        case 4 -> 5;
-                        case 5 -> 6;
-                        case 6 -> 7;
-                        case 7 -> 4;
-                        case 8 -> 1;
-                        case 9 -> 0;
-                        case 10-> 3;
-                        case 11-> 2;
-                        default -> -1;
-                    };//xy,xz:6l:zzy
-                    perms.get(24)[x][y][z] = switch (cube[z][y][-(x-cube.length+1)]){
-                        case 0 -> 9;
-                        case 1 -> 10;
-                        case 2 -> 11;
-                        case 3 -> 8;
-                        case 4 -> 5;
-                        case 5 -> 6;
-                        case 6 -> 7;
-                        case 7 -> 4;
-                        case 8 -> 1;
-                        case 9 -> 0;
-                        case 10-> 3;
-                        case 11-> 2;
-                        default -> -1;
-                    };//xz,yz:6r:xxy
-                    perms.get(25)[x][y][z] = switch (cube[z][y][-(x-cube.length+1)]){
-                        case 0 -> 9;
-                        case 1 -> 10;
-                        case 2 -> 11;
-                        case 3 -> 8;
-                        case 4 -> 5;
-                        case 5 -> 6;
-                        case 6 -> 7;
-                        case 7 -> 4;
-                        case 8 -> 1;
-                        case 9 -> 0;
-                        case 10-> 3;
-                        case 11-> 2;
-                        default -> -1;
-                    };//yz,xy:1r:yyy
-                    perms.get(26)[x][y][z] = switch (cube[x][-(y-cube[x].length+1)][z]){
-                        case 0 -> 2;
-                        case 1 -> 1;
-                        case 2 -> 0;
-                        case 3 -> 3;
-                        case 4 -> 4;
-                        case 5 -> 5;
-                        case 6 -> 6;
-                        case 7 -> 7;
-                        case 8 -> 8;
-                        case 9 -> 11;
-                        case 10-> 10;
-                        case 11-> 9;
-                        default -> -1;
-                    };//yz:6u:zz
-                    perms.get(27)[x][y][z] = switch (cube[x][-(y-cube[x].length+1)][z]){
-                        case 0 -> 2;
-                        case 1 -> 1;
-                        case 2 -> 0;
-                        case 3 -> 3;
-                        case 4 -> 4;
-                        case 5 -> 5;
-                        case 6 -> 6;
-                        case 7 -> 7;
-                        case 8 -> 8;
-                        case 9 -> 11;
-                        case 10-> 10;
-                        case 11-> 9;
-                        default -> -1;
-                    };//xy:6d:xx
-                    perms.get(29)[x][y][z] = switch (cube[z][-(y-cube[x].length+1)][x]){
-                        case 0 -> 11;
-                        case 1 -> 10;
-                        case 2 -> 9;
-                        case 3 -> 8;
-                        case 4 -> 7;
-                        case 5 -> 6;
-                        case 6 -> 5;
-                        case 7 -> 4;
-                        case 8 -> 3;
-                        case 9 -> 2;
-                        case 10-> 1;
-                        case 11-> 0;
-                        default -> -1;
-                    };//yz,xy:6r:xxy
-                    perms.get(30)[x][y][z] = switch (cube[z][-(y-cube[x].length+1)][x]){
-                        case 0 -> 11;
-                        case 1 -> 10;
-                        case 2 -> 9;
-                        case 3 -> 8;
-                        case 4 -> 7;
-                        case 5 -> 6;
-                        case 6 -> 5;
-                        case 7 -> 4;
-                        case 8 -> 3;
-                        case 9 -> 2;
-                        case 10-> 1;
-                        case 11-> 0;
-                        default -> -1;
-                    };//xz,yz:1r:yyy
-                    perms.get(31)[x][y][z] = switch (cube[x][y][-(z-cube[x][y].length+1)]){
-                        case 0 -> 0;
-                        case 1 -> 3;
-                        case 2 -> 2;
-                        case 3 -> 1;
-                        case 4 -> 4;
-                        case 5 -> 7;
-                        case 6 -> 6;
-                        case 7 -> 5;
-                        case 8 -> 8;
-                        case 9 -> 9;
-                        case 10-> 10;
-                        case 11-> 11;
-                        default -> -1;
-                    };//yz:1d:yy
-                    perms.get(32)[x][y][z] = switch (cube[x][y][-(z-cube[x][y].length+1)]){
-                        case 0 -> 0;
-                        case 1 -> 3;
-                        case 2 -> 2;
-                        case 3 -> 1;
-                        case 4 -> 4;
-                        case 5 -> 7;
-                        case 6 -> 6;
-                        case 7 -> 5;
-                        case 8 -> 8;
-                        case 9 -> 9;
-                        case 10-> 10;
-                        case 11-> 11;
-                        default -> -1;
-                    };//xz:6d:xx
-                    perms.get(33)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][y][x]){
-                        case 0 -> 9;
-                        case 1 -> 8;
-                        case 2 -> 11;
-                        case 3 -> 10;
-                        case 4 -> 7;
-                        case 5 -> 4;
-                        case 6 -> 5;
-                        case 7 -> 6;
-                        case 8 -> 3;
-                        case 9 -> 0;
-                        case 10-> 1;
-                        case 11-> 2;
-                        default -> -1;
-                    };//xz,yz:6l:zzy
-                    perms.get(34)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][y][x]){
-                        case 0 -> 9;
-                        case 1 -> 8;
-                        case 2 -> 11;
-                        case 3 -> 10;
-                        case 4 -> 7;
-                        case 5 -> 4;
-                        case 6 -> 5;
-                        case 7 -> 6;
-                        case 8 -> 3;
-                        case 9 -> 0;
-                        case 10-> 1;
-                        case 11-> 2;
-                        default -> -1;
-                    };//xy,xz:6r:xxy
-                    perms.get(36)[x][y][z] = switch (cube[-(x-cube.length+1)][-(y-cube[x].length+1)][z]){
-                        case 0 -> 2;
-                        case 1 -> 1;
-                        case 2 -> 0;
-                        case 3 -> 3;
-                        case 4 -> 6;
-                        case 5 -> 5;
-                        case 6 -> 4;
-                        case 7 -> 7;
-                        case 8 -> 10;
-                        case 9 -> 11;
-                        case 10-> 8;
-                        case 11-> 9;
-                        default -> -1;
-                    };//xy,xz:1d:yy
-                    perms.get(38)[x][y][z] = switch (cube[-(x-cube.length+1)][-(y-cube[x].length+1)][z]){
-                        case 0 -> 2;
-                        case 1 -> 1;
-                        case 2 -> 0;
-                        case 3 -> 3;
-                        case 4 -> 6;
-                        case 5 -> 5;
-                        case 6 -> 4;
-                        case 7 -> 7;
-                        case 8 -> 10;
-                        case 9 -> 11;
-                        case 10-> 8;
-                        case 11-> 9;
-                        default -> -1;
-                    };//yz,xy:6d:xx
-                    perms.get(39)[x][y][z] = switch (cube[z][-(y-cube[x].length+1)][-(x-cube.length+1)]){
-                        case 0 -> 11;
-                        case 1 -> 10;
-                        case 2 -> 9;
-                        case 3 -> 8;
-                        case 4 -> 5;
-                        case 5 -> 6;
-                        case 6 -> 7;
-                        case 7 -> 4;
-                        case 8 -> 1;
-                        case 9 -> 2;
-                        case 10-> 3;
-                        case 11-> 0;
-                        default -> -1;
-                    };//xy:6l:zzy
-                    perms.get(40)[x][y][z] = switch (cube[z][-(y-cube[x].length+1)][-(x-cube.length+1)]){
-                        case 0 -> 11;
-                        case 1 -> 10;
-                        case 2 -> 9;
-                        case 3 -> 8;
-                        case 4 -> 5;
-                        case 5 -> 6;
-                        case 6 -> 7;
-                        case 7 -> 4;
-                        case 8 -> 1;
-                        case 9 -> 2;
-                        case 10-> 3;
-                        case 11-> 0;
-                        default -> -1;
-                    };//yz:6r:xxy
-                    perms.get(42)[x][y][z] = switch (cube[-(x-cube.length+1)][y][-(z-cube[x][y].length+1)]){
-                        case 0 -> 0;
-                        case 1 -> 3;
-                        case 2 -> 2;
-                        case 3 -> 1;
-                        case 4 -> 6;
-                        case 5 -> 7;
-                        case 6 -> 4;
-                        case 7 -> 5;
-                        case 8 -> 10;
-                        case 9 -> 9;
-                        case 10-> 8;
-                        case 11-> 11;
-                        default -> -1;
-                    };//xy,xz:6u:zz
-                    perms.get(43)[x][y][z] = switch (cube[-(x-cube.length+1)][y][-(z-cube[x][y].length+1)]){
-                        case 0 -> 0;
-                        case 1 -> 3;
-                        case 2 -> 2;
-                        case 3 -> 1;
-                        case 4 -> 6;
-                        case 5 -> 7;
-                        case 6 -> 4;
-                        case 7 -> 5;
-                        case 8 -> 10;
-                        case 9 -> 9;
-                        case 10-> 8;
-                        case 11-> 11;
-                        default -> -1;
-                    };//xz,yz:6d:xx
-                    perms.get(44)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][y][-(x-cube.length+1)]){
-                        case 0 -> 9;
-                        case 1 -> 8;
-                        case 2 -> 11;
-                        case 3 -> 10;
-                        case 4 -> 5;
-                        case 5 -> 4;
-                        case 6 -> 7;
-                        case 7 -> 6;
-                        case 8 -> 1;
-                        case 9 -> 0;
-                        case 10-> 3;
-                        case 11-> 2;
-                        default -> -1;
-                    };//xy:1r:yyy
-                    perms.get(45)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][y][-(x-cube.length+1)]){
-                        case 0 -> 9;
-                        case 1 -> 8;
-                        case 2 -> 11;
-                        case 3 -> 10;
-                        case 4 -> 5;
-                        case 5 -> 4;
-                        case 6 -> 7;
-                        case 7 -> 6;
-                        case 8 -> 1;
-                        case 9 -> 0;
-                        case 10-> 3;
-                        case 11-> 2;
-                        default -> -1;
-                    };//xz:6r:xxy
-                    perms.get(46)[x][y][z] = switch (cube[x][-(y-cube[x].length+1)][-(z-cube[x][y].length+1)]){
-                        case 0 -> 2;
-                        case 1 -> 3;
-                        case 2 -> 0;
-                        case 3 -> 1;
-                        case 4 -> 4;
-                        case 5 -> 7;
-                        case 6 -> 6;
-                        case 7 -> 5;
-                        case 8 -> 8;
-                        case 9 -> 11;
-                        case 10-> 10;
-                        case 11-> 9;
-                        default -> -1;
-                    };//xz,yz:1d:yy
-                    perms.get(47)[x][y][z] = switch (cube[x][-(y-cube[x].length+1)][-(z-cube[x][y].length+1)]){
-                        case 0 -> 2;
-                        case 1 -> 3;
-                        case 2 -> 0;
-                        case 3 -> 1;
-                        case 4 -> 4;
-                        case 5 -> 7;
-                        case 6 -> 6;
-                        case 7 -> 5;
-                        case 8 -> 8;
-                        case 9 -> 11;
-                        case 10-> 10;
-                        case 11-> 9;
-                        default -> -1;
-                    };//yz,xy:6u:zz
-                    perms.get(49)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(y-cube[x].length+1)][x]){
-                        case 0 -> 11;
-                        case 1 -> 8;
-                        case 2 -> 9;
-                        case 3 -> 10;
-                        case 4 -> 7;
-                        case 5 -> 4;
-                        case 6 -> 5;
-                        case 7 -> 6;
-                        case 8 -> 3;
-                        case 9 -> 2;
-                        case 10-> 1;
-                        case 11-> 0;
-                        default -> -1;
-                    };//yz:6l:zzy
-                    perms.get(50)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(y-cube[x].length+1)][x]){
-                        case 0 -> 11;
-                        case 1 -> 8;
-                        case 2 -> 9;
-                        case 3 -> 10;
-                        case 4 -> 7;
-                        case 5 -> 4;
-                        case 6 -> 5;
-                        case 7 -> 6;
-                        case 8 -> 3;
-                        case 9 -> 2;
-                        case 10-> 1;
-                        case 11-> 0;
-                        default -> -1;
-                    };//xy:6r:xxy
-                    perms.get(51)[x][y][z] = switch (cube[-(x-cube.length+1)][-(y-cube[x].length+1)][-(z-cube[x][y].length+1)]){
-                        case 0 -> 2;
-                        case 1 -> 3;
-                        case 2 -> 0;
-                        case 3 -> 1;
-                        case 4 -> 6;
-                        case 5 -> 7;
-                        case 6 -> 4;
-                        case 7 -> 5;
-                        case 8 -> 10;
-                        case 9 -> 11;
-                        case 10-> 8;
-                        case 11-> 9;
-                        default -> -1;
-                    };//xy:6u:zz
-                    perms.get(52)[x][y][z] = switch (cube[-(x-cube.length+1)][-(y-cube[x].length+1)][-(z-cube[x][y].length+1)]){
-                        case 0 -> 2;
-                        case 1 -> 3;
-                        case 2 -> 0;
-                        case 3 -> 1;
-                        case 4 -> 6;
-                        case 5 -> 7;
-                        case 6 -> 4;
-                        case 7 -> 5;
-                        case 8 -> 10;
-                        case 9 -> 11;
-                        case 10-> 8;
-                        case 11-> 9;
-                        default -> -1;
-                    };//yz:6d:xx
-                    perms.get(53)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(y-cube[x].length+1)][-(x-cube.length+1)]){
-                        case 0 -> 11;
-                        case 1 -> 8;
-                        case 2 -> 9;
-                        case 3 -> 10;
-                        case 4 -> 5;
-                        case 5 -> 4;
-                        case 6 -> 7;
-                        case 7 -> 6;
-                        case 8 -> 1;
-                        case 9 -> 2;
-                        case 10-> 3;
-                        case 11-> 0;
-                        default -> -1;
-                    };//yz,xy:6l:zzy
-                    perms.get(55)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(y-cube[x].length+1)][-(x-cube.length+1)]){
-                        case 0 -> 11;
-                        case 1 -> 8;
-                        case 2 -> 9;
-                        case 3 -> 10;
-                        case 4 -> 5;
-                        case 5 -> 4;
-                        case 6 -> 7;
-                        case 7 -> 6;
-                        case 8 -> 1;
-                        case 9 -> 2;
-                        case 10-> 3;
-                        case 11-> 0;
-                        default -> -1;
-                    };//xy,xz:1r:yyy
-                    */
-                    /*perms.get(0)[x][y][z] = switch (cube[x]                         [z]                         [-(y-cube[x].length+1)]){
-                        case 0 -> 3;
-                        case 1 -> 0;
-                        case 2 -> 1;
-                        case 3 -> 2;
-                        case 4 -> 8;
-                        case 5 -> 9;
-                        case 6 -> 10;
-                        case 7 -> 11;
-                        case 8 -> 4;
-                        case 9 -> 7;
-                        case 10-> 6;
-                        case 11-> 5;
-                        default -> -1;
-                    };                         //00:2u:x
-                    perms.get(0)[x][y][z] = switch (cube[x]                         [-(z-cube[x][y].length+1)]                         [y]){
-                        case 0 -> 1;
-                        case 1 -> 2;
-                        case 2 -> 3;
-                        case 3 -> 0;
-                        case 4 -> 9;
-                        case 5 -> 10;
-                        case 6 -> 11;
-                        case 7 -> 8;
-                        case 8 -> 5;
-                        case 9 -> 4;
-                        case 10-> 7;
-                        case 11-> 6;
-                        default -> -1;
-                    };                         //00:5d:xxx
-
-                    perms.get(0)[x][y][z] = switch (cube[y]                         [-(x-cube.length+1)]                         [z]){
-                        case 0 -> 4;
-                        case 1 -> 5;
-                        case 2 -> 6;
-                        case 3 -> 7;
-                        case 4 -> 2;
-                        case 5 -> 1;
-                        case 6 -> 0;
-                        case 7 -> 3;
-                        case 8 -> 9;
-                        case 9 -> 10;
-                        case 10-> 11;
-                        case 11-> 8;
-                        default -> -1;
-                    };                         //00:3l:z
-                    perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]                         [x]                         [z]){
-                        case 0 -> 6;
-                        case 1 -> 5;
-                        case 2 -> 4;
-                        case 3 -> 7;
-                        case 4 -> 0;
-                        case 5 -> 1;
-                        case 6 -> 2;
-                        case 7 -> 3;
-                        case 8 -> 11;
-                        case 9 -> 8;
-                        case 10-> 9;
-                        case 11-> 10;
-                        default -> -1;
-                    };                         //00:4r:zzz*/
-
-                    /*
-                    2r = xyyy
-                    2d = xyy
-                    2l = xy
-                    3u = yyyx
-                    3r = xxz
-                    3d = xxxz
-                    4u = zzzy
-                    4d = xyxy
-                    4l = xyx
-                    5u = yyx
-                    5r = xxxy
-                    5l = xyxx*/
-
-
                 }
         return perms;
     }
@@ -1876,8 +1086,15 @@ public class Solve
                 orientation = solution.addT(point, orientation);
 
                 //Main.print("orientation: " + orientation + "\n");
+                //if already explored
+                if(orientation != -2 && deadContains(solution.getCube()))
+                {
+                    solution.removeT(point, orientation);
+                    solution.setCubeFrontier(oldCubeFrontier);
+                    solution.setCubeExplored(oldCubeExplored);
+                }
                 //if a T fits
-                if (orientation != -2)
+                else if (orientation != -2 )
                 {
                     //printCube(solution.getCube(),file);
 
@@ -1892,10 +1109,9 @@ public class Solve
                     else
                     {
                         solutions.add(solution.getCube());
-                        if(solutions.size()%1000 ==0)
+                        if(solutions.size()%100 == 0)
                         {
-
-                            System.out.println("solutions " + solutions.size() + " " + (System.nanoTime()-time)/60000000000.0);
+                            System.out.println("solutions " + solutions.size() + " " + (System.nanoTime() - time) / 60000000000.0);
                         }
                         //printCube(solution.getCube(),solutionFile);
                     }
@@ -1912,6 +1128,7 @@ public class Solve
     public void addDead(int[][][] cube)
     {
         boolean added = false;
+        boolean empty = true;
         if(deadEnd.size() == 0)
         {
             deadEnd.add(cube);
@@ -1921,22 +1138,747 @@ public class Solve
             boolean contained = false;
             for (int d = 0; d < deadEnd.size(); d++)
             {
-
-                boolean deadContains = true;
-                for (int x = 0; x < 6 && deadContains; x++)
-                    for (int y = 0; y < HEIGHT && deadContains; y++)
-                        for (int z = 0; z < 6; z++)
+                ArrayList<Boolean> deadContains = new ArrayList<>();
+                for(int i = 0; i < 16; i++)
+                {
+                    deadContains.add(true);
+                }
+                contained = true;
+                for (int x = 0; x < 6 && contained; x++)
+                    for (int y = 0; y < HEIGHT && contained; y++)
+                        for (int z = 0; z < 6 && contained; z++)
                         {
                             //if(deadEnd.get(d)[x][y][z] == cube[x][y][z] || deadEnd.get(d)[x][y][z] != -1) cube is in dead
-                            if (deadEnd.get(d)[x][y][z] != cube[x][y][z] && cube[x][y][z] != -1)// cube is not in dead
+                            if(cube[x][y][z] != -1)
                             {
-                                deadContains = false;
-                                break;
+                                empty = false;
+                                if (deadEnd.get(d)[x][y][z] != cube[x][y][z])// cube is not in dead
+                                    deadContains.set(0, false);
+                                if (!switch (cube[x]                           [y]                           [-(z - cube[x][y].length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 11;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })//xy : 00
+                                    deadContains.set(1, false);
+                                if (!switch (cube[x]                           [-(y - cube[x].length + 1)]   [z]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 9;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })                           //xy : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
+                                    deadContains.set(2, false);
+                                if (!switch (cube[x]                           [-(y - cube[x].length + 1)]   [-(z - cube[x][y].length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 9;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })//00 : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
+                                    deadContains.set(3, false);
+                                /*perms.get(0)[x][y][z] = switch (cube[x]                       [z]                       [y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 10-> 6;
+                                    case 11-> 7;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xxx
+                                perms.get(0)[x][y][z] = switch (cube[x]                       [z]                       [-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 10-> 6;
+                                    case 11-> 5;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //00 : x,    yxz
+                                perms.get(0)[x][y][z] = switch (cube[x]                       [-(z-cube[x][y].length+1)][y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 10-> 6;
+                                    case 11-> 7;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : xxx
+                                perms.get(0)[x][y][z] = switch (cube[x]                       [-(z-cube[x][y].length+1)][-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 10-> 6;
+                                    case 11-> 5;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //xy : x,    yxz*/
+                                if (!switch (cube[-(x - cube.length + 1)]      [y]                           [z]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 11;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })                           //xy : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
+                                    deadContains.set(4, false);
+                                if (!switch (cube[-(x - cube.length + 1)]      [y]                           [-(z - cube[x][y].length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 11;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })//00 : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
+                                    deadContains.set(5, false);
+                                if (!switch (cube[-(x - cube.length + 1)]      [-(y - cube[x].length + 1)]   [z]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 9;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })                           //00 : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
+                                    deadContains.set(6, false);
+                                if (!switch (cube[-(x - cube.length + 1)]      [-(y - cube[x].length + 1)]   [-(z - cube[x][y].length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 9;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })//xy : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
+                                    deadContains.set(7, false);
+                                /*perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [z]                       [y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 10-> 4;
+                                    case 11-> 7;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : xyy,  yzy,  zxy,  zyz,  zzx
+                                perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [z]                       [-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 10-> 4;
+                                    case 11-> 5;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //xy : xzz,  yyx
+                                perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [-(z-cube[x][y].length+1)][y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 10-> 4;
+                                    case 11-> 7;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xyy,  yzy,  zxy,  zyz,  zzx
+                                perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [-(z-cube[x][y].length+1)][-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 10-> 4;
+                                    case 11-> 5;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //00 : xzz,  yyx
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [x]                       [z]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 10-> 9;
+                                    case 11-> 8;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xxz,  zyy
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [x]                       [-(z-cube[x][y].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 10-> 9;
+                                    case 11-> 8;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };//00 : xxz,  zyy
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [-(x-cube.length+1)]      [z]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 10-> 11;
+                                    case 11-> 8;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : zzz
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [-(x-cube.length+1)]      [-(z-cube[x][y].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 10-> 11;
+                                    case 11-> 8;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };//xy : zzz
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [z]                       [x]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 10-> 5;
+                                    case 11-> 4;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : xyyy, yxxz, yzyy, zxyy, zyzy, zzxy, zzyz, zzzx
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [z]                       [-(x-cube.length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 10-> 7;
+                                    case 11-> 4;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };      //xy : xxxy, xxyz, xxzx, xyzz, xzxz, yzzz, zxzz, zyyx
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [-(z-cube[x][y].length+1)][x]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 10-> 5;
+                                    case 11-> 4;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xyyy, yxxz, yzyy, zxyy, zyzy, zzxy, zzyz, zzzx
+                                perms.get(0)[x][y][z] = switch (cube[y]                       [-(z-cube[x][y].length+1)][-(x-cube.length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 10-> 7;
+                                    case 11-> 4;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };      //00 : xxxy, xxyz, xxzx, xyzz, xzxz, yzzz, zxzz, zyyx
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [x]                       [z]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 10-> 9;
+                                    case 11-> 10;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : xzy,  z
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [x]                       [-(z-cube[x][y].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 10-> 9;
+                                    case 11-> 10;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };//xy : xzy,  z
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(x-cube.length+1)]      [z]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 10-> 11;
+                                    case 11-> 10;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xyx,  yxy,  yyz,  yzx,  zxx
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(x-cube.length+1)]      [-(z-cube[x][y].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 10-> 11;
+                                    case 11-> 10;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };//00 : xyx,  yxy,  yyz,  yzx,  zxx
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [z]                       [x]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 10-> 5;
+                                    case 11-> 6;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xyxx, xzzy, yxyx, yyxy, yyyz, yyzx, yzxx, zxxx
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [z]                       [-(x-cube.length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 10-> 7;
+                                    case 11-> 6;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };      //00 : xy,   xzyx, yxzy, yz,   zx,   zyxz
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(z-cube[x][y].length+1)][x]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 10-> 5;
+                                    case 11-> 6;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : xyxx, xzzy, yxyx, yyxy, yyyz, yyzx, yzxx, zxxx
+                                perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(z-cube[x][y].length+1)][-(x-cube.length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 10-> 7;
+                                    case 11-> 6;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };      //xy : xy,   xzyx, yxzy, yz,   zx,   zyxz
+                                perms.get(0)[x][y][z] = switch (cube[z]                       [x]                       [y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 10-> 0;
+                                    case 11-> 3;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : xxxz, xzyy, yxxx, zy,   zzyx
+                                perms.get(0)[x][y][z] = switch (cube[z]                       [x]                       [-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 10-> 0;
+                                    case 11-> 1;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //xy : xxzy, xz,   yxzz, yyyx, zyyy
+                                perms.get(0)[x][y][z] = switch (cube[z]                       [-(x-cube.length+1)]      [y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 10-> 2;
+                                    case 11-> 3;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xxyx, xyxy, xyyz, xyzx, xzxx, yxyy, yyzy, yzxy, yzyz, yzzx, zxxy, zxyz, zxzx, zyzz, zzxz
+                                perms.get(0)[x][y][z] = switch (cube[z]                       [-(x-cube.length+1)]      [-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 10-> 2;
+                                    case 11-> 1;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //00 : xzzz, yx,   yyxz, zyxx, zzzy*/
+                                if (!switch (cube[z]                           [y]                           [x]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 2;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })                           //xy : yyy
+                                    deadContains.set(8, false);
+                                if (!switch (cube[z]                           [y]                           [-(x - cube.length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 2;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })      //00 : y,    zyx
+                                    deadContains.set(9, false);
+                                if (!switch (cube[z]                           [-(y - cube[x].length + 1)]   [x]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 0;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })                           //00 : yxx,  zzy
+                                    deadContains.set(10, false);
+                                if (!switch (cube[z]                           [-(y - cube[x].length + 1)]   [-(x - cube.length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 0;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })      //xy : xxy,  xyz,  xzx,  yzz,  zxz
+                                    deadContains.set(11, false);
+                                /*perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][x]                       [y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 10-> 0;
+                                    case 11-> 3;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //xy : xxxz, xzyy, yxxx, zy,   zzyx
+                                perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][x]                       [-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 10-> 0;
+                                    case 11-> 1;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //00 : xxzy, xz,   yxzz, yyyx, zyyy
+                                perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(x-cube.length+1)]      [-(y-cube[x].length+1)]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 10-> 2;
+                                    case 11-> 1;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };   //xy : xzzz, yx,   yyxz, zyxx, zzzy
+                                perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(x-cube.length+1)]      [y]){
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 10-> 2;
+                                    case 11-> 3;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                };                       //00 : xxyx, xyxy, xyyz, xyzx, xzxx, yxyy, yyzy, yzxy, yzyz, yzzx, zxxy, zxyz, zxzx, zyzz, zzxz*/
+                                if (!switch (cube[-(z - cube[x][y].length + 1)][y]                           [x]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 2;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })                           //00 : yyy
+                                    deadContains.set(12, false);
+                                if (!switch (cube[-(z - cube[x][y].length + 1)][y]                           [-(x - cube.length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 0;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 2;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })      //xy : y,    zyx
+                                    deadContains.set(13, false);
+                                if (!switch (cube[-(z - cube[x][y].length + 1)][-(y - cube[x].length + 1)]   [x]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 0;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })                           //xy : yxx,  zzy
+                                    deadContains.set(14, false);
+                                if (!switch (cube[-(z - cube[x][y].length + 1)][-(y - cube[x].length + 1)]   [-(x - cube.length + 1)]) {
+                                    case 0 -> deadEnd.get(d)[x][y][z] == 11;
+                                    case 1 -> deadEnd.get(d)[x][y][z] == 8;
+                                    case 2 -> deadEnd.get(d)[x][y][z] == 9;
+                                    case 3 -> deadEnd.get(d)[x][y][z] == 10;
+                                    case 4 -> deadEnd.get(d)[x][y][z] == 5;
+                                    case 5 -> deadEnd.get(d)[x][y][z] == 4;
+                                    case 6 -> deadEnd.get(d)[x][y][z] == 7;
+                                    case 7 -> deadEnd.get(d)[x][y][z] == 6;
+                                    case 8 -> deadEnd.get(d)[x][y][z] == 1;
+                                    case 9 -> deadEnd.get(d)[x][y][z] == 2;
+                                    case 10 -> deadEnd.get(d)[x][y][z] == 3;
+                                    case 11 -> deadEnd.get(d)[x][y][z] == 0;
+                                    default -> deadEnd.get(d)[x][y][z] == -1;
+                                })      //00 : xxy,  xyz,  xzx,  yzz,  zxz
+                                    deadContains.set(15, false);
+                                contained = deadContains.contains(true);
                             }
                         }
-                if (deadContains)
+                if (contained && !empty)
                 {
-                    contained = true;
                     if (!added)
                     {
                         deadEnd.set(d, cube);
@@ -1950,11 +1892,763 @@ public class Solve
                     }
                 }
             }
-            if(!contained)
+            if(!contained && !empty)
             {
                 deadEnd.add(cube);
                 dead++;
             }
         }
+    }
+    public boolean deadContains(int[][][] cube)
+    {
+        ArrayList<Boolean> contains = new ArrayList<>();
+        boolean contained = false;
+        for (int[][][] d : deadEnd)
+        {
+            contains.clear();
+            for(int i = 0; i < 16; i++)
+            {
+                contains.add(true);
+            }
+            contained = true;
+            for (int x = 0; x < 6 && contained; x++)
+                for (int y = 0; y < HEIGHT && contained; y++)
+                    for (int z = 0; z < 6 && contained; z++)
+                    {
+                        //if(deadEnd.get(d)[x][y][z] == cube[x][y][z] || deadEnd.get(d)[x][y][z] != -1) cube is in dead
+                        if(d[x][y][z] != -1)
+                        {
+                            if (d[x][y][z] != cube[x][y][z])// cube is not in dead
+                                contains.set(0, false);
+                            if (!switch (cube[x]                           [y]                           [-(z - cube[x][y].length + 1)]) {
+                                case 0 -> d[x][y][z] == 0;
+                                case 1 -> d[x][y][z] == 3;
+                                case 2 -> d[x][y][z] == 2;
+                                case 3 -> d[x][y][z] == 1;
+                                case 4 -> d[x][y][z] == 4;
+                                case 5 -> d[x][y][z] == 7;
+                                case 6 -> d[x][y][z] == 6;
+                                case 7 -> d[x][y][z] == 5;
+                                case 8 -> d[x][y][z] == 8;
+                                case 9 -> d[x][y][z] == 9;
+                                case 10 -> d[x][y][z] == 10;
+                                case 11 -> d[x][y][z] == 11;
+                                default -> d[x][y][z] == -1;
+                            })//xy : 00
+                                contains.set(1, false);
+                            if (!switch (cube[x]                           [-(y - cube[x].length + 1)]   [z]) {
+                                case 0 -> d[x][y][z] == 2;
+                                case 1 -> d[x][y][z] == 1;
+                                case 2 -> d[x][y][z] == 0;
+                                case 3 -> d[x][y][z] == 3;
+                                case 4 -> d[x][y][z] == 4;
+                                case 5 -> d[x][y][z] == 5;
+                                case 6 -> d[x][y][z] == 6;
+                                case 7 -> d[x][y][z] == 7;
+                                case 8 -> d[x][y][z] == 8;
+                                case 9 -> d[x][y][z] == 11;
+                                case 10 -> d[x][y][z] == 10;
+                                case 11 -> d[x][y][z] == 9;
+                                default -> d[x][y][z] == -1;
+                            })                           //xy : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
+                                contains.set(2, false);
+                            if (!switch (cube[x]                           [-(y - cube[x].length + 1)]   [-(z - cube[x][y].length + 1)]) {
+                                case 0 -> d[x][y][z] == 2;
+                                case 1 -> d[x][y][z] == 3;
+                                case 2 -> d[x][y][z] == 0;
+                                case 3 -> d[x][y][z] == 1;
+                                case 4 -> d[x][y][z] == 4;
+                                case 5 -> d[x][y][z] == 7;
+                                case 6 -> d[x][y][z] == 6;
+                                case 7 -> d[x][y][z] == 5;
+                                case 8 -> d[x][y][z] == 8;
+                                case 9 -> d[x][y][z] == 11;
+                                case 10 -> d[x][y][z] == 10;
+                                case 11 -> d[x][y][z] == 9;
+                                default -> d[x][y][z] == -1;
+                            })//00 : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
+                                contains.set(3, false);
+                            /*perms.get(0)[x][y][z] = switch (cube[x]                       [z]                       [y]){
+                                case 0 -> d[x][y][z] == 1;
+                                case 1 -> d[x][y][z] == 0;
+                                case 2 -> d[x][y][z] == 3;
+                                case 3 -> d[x][y][z] == 2;
+                                case 4 -> d[x][y][z] == 8;
+                                case 5 -> d[x][y][z] == 9;
+                                case 6 -> d[x][y][z] == 10;
+                                case 7 -> d[x][y][z] == 11;
+                                case 8 -> d[x][y][z] == 4;
+                                case 9 -> d[x][y][z] == 5;
+                                case 10-> 6;
+                                case 11-> 7;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xxx
+                            perms.get(0)[x][y][z] = switch (cube[x]                       [z]                       [-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 3;
+                                case 1 -> d[x][y][z] == 0;
+                                case 2 -> d[x][y][z] == 1;
+                                case 3 -> d[x][y][z] == 2;
+                                case 4 -> d[x][y][z] == 8;
+                                case 5 -> d[x][y][z] == 9;
+                                case 6 -> d[x][y][z] == 10;
+                                case 7 -> d[x][y][z] == 11;
+                                case 8 -> d[x][y][z] == 4;
+                                case 9 -> d[x][y][z] == 7;
+                                case 10-> 6;
+                                case 11-> 5;
+                                default -> d[x][y][z] == -1;
+                            };   //00 : x,    yxz
+                            perms.get(0)[x][y][z] = switch (cube[x]                       [-(z-cube[x][y].length+1)][y]){
+                                case 0 -> d[x][y][z] == 1;
+                                case 1 -> d[x][y][z] == 2;
+                                case 2 -> d[x][y][z] == 3;
+                                case 3 -> d[x][y][z] == 0;
+                                case 4 -> d[x][y][z] == 8;
+                                case 5 -> d[x][y][z] == 11;
+                                case 6 -> d[x][y][z] == 10;
+                                case 7 -> d[x][y][z] == 9;
+                                case 8 -> d[x][y][z] == 4;
+                                case 9 -> d[x][y][z] == 5;
+                                case 10-> 6;
+                                case 11-> 7;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : xxx
+                            perms.get(0)[x][y][z] = switch (cube[x]                       [-(z-cube[x][y].length+1)][-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 3;
+                                case 1 -> d[x][y][z] == 2;
+                                case 2 -> d[x][y][z] == 1;
+                                case 3 -> d[x][y][z] == 0;
+                                case 4 -> d[x][y][z] == 8;
+                                case 5 -> d[x][y][z] == 11;
+                                case 6 -> d[x][y][z] == 10;
+                                case 7 -> d[x][y][z] == 9;
+                                case 8 -> d[x][y][z] == 4;
+                                case 9 -> d[x][y][z] == 7;
+                                case 10-> 6;
+                                case 11-> 5;
+                                default -> d[x][y][z] == -1;
+                            };   //xy : x,    yxz*/
+                            if (!switch (cube[-(x - cube.length + 1)]      [y]                           [z]) {
+                                case 0 -> d[x][y][z] == 0;
+                                case 1 -> d[x][y][z] == 1;
+                                case 2 -> d[x][y][z] == 2;
+                                case 3 -> d[x][y][z] == 3;
+                                case 4 -> d[x][y][z] == 6;
+                                case 5 -> d[x][y][z] == 5;
+                                case 6 -> d[x][y][z] == 4;
+                                case 7 -> d[x][y][z] == 7;
+                                case 8 -> d[x][y][z] == 10;
+                                case 9 -> d[x][y][z] == 9;
+                                case 10 -> d[x][y][z] == 8;
+                                case 11 -> d[x][y][z] == 11;
+                                default -> d[x][y][z] == -1;
+                            })                           //xy : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
+                                contains.set(4, false);
+                            if (!switch (cube[-(x - cube.length + 1)]      [y]                           [-(z - cube[x][y].length + 1)]) {
+                                case 0 -> d[x][y][z] == 0;
+                                case 1 -> d[x][y][z] == 3;
+                                case 2 -> d[x][y][z] == 2;
+                                case 3 -> d[x][y][z] == 1;
+                                case 4 -> d[x][y][z] == 6;
+                                case 5 -> d[x][y][z] == 7;
+                                case 6 -> d[x][y][z] == 4;
+                                case 7 -> d[x][y][z] == 5;
+                                case 8 -> d[x][y][z] == 10;
+                                case 9 -> d[x][y][z] == 9;
+                                case 10 -> d[x][y][z] == 8;
+                                case 11 -> d[x][y][z] == 11;
+                                default -> d[x][y][z] == -1;
+                            })//00 : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
+                                contains.set(5, false);
+                            if (!switch (cube[-(x - cube.length + 1)]      [-(y - cube[x].length + 1)]   [z]) {
+                                case 0 -> d[x][y][z] == 2;
+                                case 1 -> d[x][y][z] == 1;
+                                case 2 -> d[x][y][z] == 0;
+                                case 3 -> d[x][y][z] == 3;
+                                case 4 -> d[x][y][z] == 6;
+                                case 5 -> d[x][y][z] == 5;
+                                case 6 -> d[x][y][z] == 4;
+                                case 7 -> d[x][y][z] == 7;
+                                case 8 -> d[x][y][z] == 10;
+                                case 9 -> d[x][y][z] == 11;
+                                case 10 -> d[x][y][z] == 8;
+                                case 11 -> d[x][y][z] == 9;
+                                default -> d[x][y][z] == -1;
+                            })                           //00 : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
+                                contains.set(6, false);
+                            if (!switch (cube[-(x - cube.length + 1)]      [-(y - cube[x].length + 1)]   [-(z - cube[x][y].length + 1)]) {
+                                case 0 -> d[x][y][z] == 2;
+                                case 1 -> d[x][y][z] == 3;
+                                case 2 -> d[x][y][z] == 0;
+                                case 3 -> d[x][y][z] == 1;
+                                case 4 -> d[x][y][z] == 6;
+                                case 5 -> d[x][y][z] == 7;
+                                case 6 -> d[x][y][z] == 4;
+                                case 7 -> d[x][y][z] == 5;
+                                case 8 -> d[x][y][z] == 10;
+                                case 9 -> d[x][y][z] == 11;
+                                case 10 -> d[x][y][z] == 8;
+                                case 11 -> d[x][y][z] == 9;
+                                default -> d[x][y][z] == -1;
+                            })//xy : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
+                                contains.set(7, false);
+                            /*perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [z]                       [y]){
+                                case 0 -> d[x][y][z] == 1;
+                                case 1 -> d[x][y][z] == 0;
+                                case 2 -> d[x][y][z] == 3;
+                                case 3 -> d[x][y][z] == 2;
+                                case 4 -> d[x][y][z] == 10;
+                                case 5 -> d[x][y][z] == 9;
+                                case 6 -> d[x][y][z] == 8;
+                                case 7 -> d[x][y][z] == 11;
+                                case 8 -> d[x][y][z] == 6;
+                                case 9 -> d[x][y][z] == 5;
+                                case 10-> 4;
+                                case 11-> 7;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : xyy,  yzy,  zxy,  zyz,  zzx
+                            perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [z]                       [-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 3;
+                                case 1 -> d[x][y][z] == 0;
+                                case 2 -> d[x][y][z] == 1;
+                                case 3 -> d[x][y][z] == 2;
+                                case 4 -> d[x][y][z] == 10;
+                                case 5 -> d[x][y][z] == 9;
+                                case 6 -> d[x][y][z] == 8;
+                                case 7 -> d[x][y][z] == 11;
+                                case 8 -> d[x][y][z] == 6;
+                                case 9 -> d[x][y][z] == 7;
+                                case 10-> 4;
+                                case 11-> 5;
+                                default -> d[x][y][z] == -1;
+                            };   //xy : xzz,  yyx
+                            perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [-(z-cube[x][y].length+1)][y]){
+                                case 0 -> d[x][y][z] == 1;
+                                case 1 -> d[x][y][z] == 2;
+                                case 2 -> d[x][y][z] == 3;
+                                case 3 -> d[x][y][z] == 0;
+                                case 4 -> d[x][y][z] == 10;
+                                case 5 -> d[x][y][z] == 11;
+                                case 6 -> d[x][y][z] == 8;
+                                case 7 -> d[x][y][z] == 9;
+                                case 8 -> d[x][y][z] == 6;
+                                case 9 -> d[x][y][z] == 5;
+                                case 10-> 4;
+                                case 11-> 7;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xyy,  yzy,  zxy,  zyz,  zzx
+                            perms.get(0)[x][y][z] = switch (cube[-(x-cube.length+1)]      [-(z-cube[x][y].length+1)][-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 3;
+                                case 1 -> d[x][y][z] == 2;
+                                case 2 -> d[x][y][z] == 1;
+                                case 3 -> d[x][y][z] == 0;
+                                case 4 -> d[x][y][z] == 10;
+                                case 5 -> d[x][y][z] == 11;
+                                case 6 -> d[x][y][z] == 8;
+                                case 7 -> d[x][y][z] == 9;
+                                case 8 -> d[x][y][z] == 6;
+                                case 9 -> d[x][y][z] == 7;
+                                case 10-> 4;
+                                case 11-> 5;
+                                default -> d[x][y][z] == -1;
+                            };   //00 : xzz,  yyx
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [x]                       [z]){
+                                case 0 -> d[x][y][z] == 6;
+                                case 1 -> d[x][y][z] == 5;
+                                case 2 -> d[x][y][z] == 4;
+                                case 3 -> d[x][y][z] == 7;
+                                case 4 -> d[x][y][z] == 2;
+                                case 5 -> d[x][y][z] == 1;
+                                case 6 -> d[x][y][z] == 0;
+                                case 7 -> d[x][y][z] == 3;
+                                case 8 -> d[x][y][z] == 11;
+                                case 9 -> d[x][y][z] == 10;
+                                case 10-> 9;
+                                case 11-> 8;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xxz,  zyy
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [x]                       [-(z-cube[x][y].length+1)]){
+                                case 0 -> d[x][y][z] == 6;
+                                case 1 -> d[x][y][z] == 7;
+                                case 2 -> d[x][y][z] == 4;
+                                case 3 -> d[x][y][z] == 5;
+                                case 4 -> d[x][y][z] == 2;
+                                case 5 -> d[x][y][z] == 3;
+                                case 6 -> d[x][y][z] == 0;
+                                case 7 -> d[x][y][z] == 1;
+                                case 8 -> d[x][y][z] == 11;
+                                case 9 -> d[x][y][z] == 10;
+                                case 10-> 9;
+                                case 11-> 8;
+                                default -> d[x][y][z] == -1;
+                            };//00 : xxz,  zyy
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [-(x-cube.length+1)]      [z]){
+                                case 0 -> d[x][y][z] == 6;
+                                case 1 -> d[x][y][z] == 5;
+                                case 2 -> d[x][y][z] == 4;
+                                case 3 -> d[x][y][z] == 7;
+                                case 4 -> d[x][y][z] == 0;
+                                case 5 -> d[x][y][z] == 1;
+                                case 6 -> d[x][y][z] == 2;
+                                case 7 -> d[x][y][z] == 3;
+                                case 8 -> d[x][y][z] == 9;
+                                case 9 -> d[x][y][z] == 10;
+                                case 10-> 11;
+                                case 11-> 8;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : zzz
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [-(x-cube.length+1)]      [-(z-cube[x][y].length+1)]){
+                                case 0 -> d[x][y][z] == 6;
+                                case 1 -> d[x][y][z] == 7;
+                                case 2 -> d[x][y][z] == 4;
+                                case 3 -> d[x][y][z] == 5;
+                                case 4 -> d[x][y][z] == 0;
+                                case 5 -> d[x][y][z] == 3;
+                                case 6 -> d[x][y][z] == 2;
+                                case 7 -> d[x][y][z] == 1;
+                                case 8 -> d[x][y][z] == 9;
+                                case 9 -> d[x][y][z] == 10;
+                                case 10-> 11;
+                                case 11-> 8;
+                                default -> d[x][y][z] == -1;
+                            };//xy : zzz
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [z]                       [x]){
+                                case 0 -> d[x][y][z] == 10;
+                                case 1 -> d[x][y][z] == 9;
+                                case 2 -> d[x][y][z] == 8;
+                                case 3 -> d[x][y][z] == 11;
+                                case 4 -> d[x][y][z] == 3;
+                                case 5 -> d[x][y][z] == 0;
+                                case 6 -> d[x][y][z] == 1;
+                                case 7 -> d[x][y][z] == 2;
+                                case 8 -> d[x][y][z] == 7;
+                                case 9 -> d[x][y][z] == 6;
+                                case 10-> 5;
+                                case 11-> 4;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : xyyy, yxxz, yzyy, zxyy, zyzy, zzxy, zzyz, zzzx
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [z]                       [-(x-cube.length+1)]){
+                                case 0 -> d[x][y][z] == 10;
+                                case 1 -> d[x][y][z] == 9;
+                                case 2 -> d[x][y][z] == 8;
+                                case 3 -> d[x][y][z] == 11;
+                                case 4 -> d[x][y][z] == 1;
+                                case 5 -> d[x][y][z] == 0;
+                                case 6 -> d[x][y][z] == 3;
+                                case 7 -> d[x][y][z] == 2;
+                                case 8 -> d[x][y][z] == 5;
+                                case 9 -> d[x][y][z] == 6;
+                                case 10-> 7;
+                                case 11-> 4;
+                                default -> d[x][y][z] == -1;
+                            };      //xy : xxxy, xxyz, xxzx, xyzz, xzxz, yzzz, zxzz, zyyx
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [-(z-cube[x][y].length+1)][x]){
+                                case 0 -> d[x][y][z] == 10;
+                                case 1 -> d[x][y][z] == 11;
+                                case 2 -> d[x][y][z] == 8;
+                                case 3 -> d[x][y][z] == 9;
+                                case 4 -> d[x][y][z] == 3;
+                                case 5 -> d[x][y][z] == 2;
+                                case 6 -> d[x][y][z] == 1;
+                                case 7 -> d[x][y][z] == 0;
+                                case 8 -> d[x][y][z] == 7;
+                                case 9 -> d[x][y][z] == 6;
+                                case 10-> 5;
+                                case 11-> 4;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xyyy, yxxz, yzyy, zxyy, zyzy, zzxy, zzyz, zzzx
+                            perms.get(0)[x][y][z] = switch (cube[y]                       [-(z-cube[x][y].length+1)][-(x-cube.length+1)]){
+                                case 0 -> d[x][y][z] == 10;
+                                case 1 -> d[x][y][z] == 11;
+                                case 2 -> d[x][y][z] == 8;
+                                case 3 -> d[x][y][z] == 9;
+                                case 4 -> d[x][y][z] == 1;
+                                case 5 -> d[x][y][z] == 2;
+                                case 6 -> d[x][y][z] == 3;
+                                case 7 -> d[x][y][z] == 0;
+                                case 8 -> d[x][y][z] == 5;
+                                case 9 -> d[x][y][z] == 6;
+                                case 10-> 7;
+                                case 11-> 4;
+                                default -> d[x][y][z] == -1;
+                            };      //00 : xxxy, xxyz, xxzx, xyzz, xzxz, yzzz, zxzz, zyyx
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [x]                       [z]){
+                                case 0 -> d[x][y][z] == 4;
+                                case 1 -> d[x][y][z] == 5;
+                                case 2 -> d[x][y][z] == 6;
+                                case 3 -> d[x][y][z] == 7;
+                                case 4 -> d[x][y][z] == 2;
+                                case 5 -> d[x][y][z] == 1;
+                                case 6 -> d[x][y][z] == 0;
+                                case 7 -> d[x][y][z] == 3;
+                                case 8 -> d[x][y][z] == 11;
+                                case 9 -> d[x][y][z] == 8;
+                                case 10-> 9;
+                                case 11-> 10;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : xzy,  z
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [x]                       [-(z-cube[x][y].length+1)]){
+                                case 0 -> d[x][y][z] == 4;
+                                case 1 -> d[x][y][z] == 7;
+                                case 2 -> d[x][y][z] == 6;
+                                case 3 -> d[x][y][z] == 5;
+                                case 4 -> d[x][y][z] == 2;
+                                case 5 -> d[x][y][z] == 3;
+                                case 6 -> d[x][y][z] == 0;
+                                case 7 -> d[x][y][z] == 1;
+                                case 8 -> d[x][y][z] == 11;
+                                case 9 -> d[x][y][z] == 8;
+                                case 10-> 9;
+                                case 11-> 10;
+                                default -> d[x][y][z] == -1;
+                            };//xy : xzy,  z
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(x-cube.length+1)]      [z]){
+                                case 0 -> d[x][y][z] == 4;
+                                case 1 -> d[x][y][z] == 5;
+                                case 2 -> d[x][y][z] == 6;
+                                case 3 -> d[x][y][z] == 7;
+                                case 4 -> d[x][y][z] == 0;
+                                case 5 -> d[x][y][z] == 1;
+                                case 6 -> d[x][y][z] == 2;
+                                case 7 -> d[x][y][z] == 3;
+                                case 8 -> d[x][y][z] == 9;
+                                case 9 -> d[x][y][z] == 8;
+                                case 10-> 11;
+                                case 11-> 10;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xyx,  yxy,  yyz,  yzx,  zxx
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(x-cube.length+1)]      [-(z-cube[x][y].length+1)]){
+                                case 0 -> d[x][y][z] == 4;
+                                case 1 -> d[x][y][z] == 7;
+                                case 2 -> d[x][y][z] == 6;
+                                case 3 -> d[x][y][z] == 5;
+                                case 4 -> d[x][y][z] == 0;
+                                case 5 -> d[x][y][z] == 3;
+                                case 6 -> d[x][y][z] == 2;
+                                case 7 -> d[x][y][z] == 1;
+                                case 8 -> d[x][y][z] == 9;
+                                case 9 -> d[x][y][z] == 8;
+                                case 10-> 11;
+                                case 11-> 10;
+                                default -> d[x][y][z] == -1;
+                            };//00 : xyx,  yxy,  yyz,  yzx,  zxx
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [z]                       [x]){
+                                case 0 -> d[x][y][z] == 8;
+                                case 1 -> d[x][y][z] == 9;
+                                case 2 -> d[x][y][z] == 10;
+                                case 3 -> d[x][y][z] == 11;
+                                case 4 -> d[x][y][z] == 3;
+                                case 5 -> d[x][y][z] == 0;
+                                case 6 -> d[x][y][z] == 1;
+                                case 7 -> d[x][y][z] == 2;
+                                case 8 -> d[x][y][z] == 7;
+                                case 9 -> d[x][y][z] == 4;
+                                case 10-> 5;
+                                case 11-> 6;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xyxx, xzzy, yxyx, yyxy, yyyz, yyzx, yzxx, zxxx
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [z]                       [-(x-cube.length+1)]){
+                                case 0 -> d[x][y][z] == 8;
+                                case 1 -> d[x][y][z] == 9;
+                                case 2 -> d[x][y][z] == 10;
+                                case 3 -> d[x][y][z] == 11;
+                                case 4 -> d[x][y][z] == 1;
+                                case 5 -> d[x][y][z] == 0;
+                                case 6 -> d[x][y][z] == 3;
+                                case 7 -> d[x][y][z] == 2;
+                                case 8 -> d[x][y][z] == 5;
+                                case 9 -> d[x][y][z] == 4;
+                                case 10-> 7;
+                                case 11-> 6;
+                                default -> d[x][y][z] == -1;
+                            };      //00 : xy,   xzyx, yxzy, yz,   zx,   zyxz
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(z-cube[x][y].length+1)][x]){
+                                case 0 -> d[x][y][z] == 8;
+                                case 1 -> d[x][y][z] == 11;
+                                case 2 -> d[x][y][z] == 10;
+                                case 3 -> d[x][y][z] == 9;
+                                case 4 -> d[x][y][z] == 3;
+                                case 5 -> d[x][y][z] == 2;
+                                case 6 -> d[x][y][z] == 1;
+                                case 7 -> d[x][y][z] == 0;
+                                case 8 -> d[x][y][z] == 7;
+                                case 9 -> d[x][y][z] == 4;
+                                case 10-> 5;
+                                case 11-> 6;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : xyxx, xzzy, yxyx, yyxy, yyyz, yyzx, yzxx, zxxx
+                            perms.get(0)[x][y][z] = switch (cube[-(y-cube[x].length+1)]   [-(z-cube[x][y].length+1)][-(x-cube.length+1)]){
+                                case 0 -> d[x][y][z] == 8;
+                                case 1 -> d[x][y][z] == 11;
+                                case 2 -> d[x][y][z] == 10;
+                                case 3 -> d[x][y][z] == 9;
+                                case 4 -> d[x][y][z] == 1;
+                                case 5 -> d[x][y][z] == 2;
+                                case 6 -> d[x][y][z] == 3;
+                                case 7 -> d[x][y][z] == 0;
+                                case 8 -> d[x][y][z] == 5;
+                                case 9 -> d[x][y][z] == 4;
+                                case 10-> 7;
+                                case 11-> 6;
+                                default -> d[x][y][z] == -1;
+                            };      //xy : xy,   xzyx, yxzy, yz,   zx,   zyxz
+                            perms.get(0)[x][y][z] = switch (cube[z]                       [x]                       [y]){
+                                case 0 -> d[x][y][z] == 5;
+                                case 1 -> d[x][y][z] == 6;
+                                case 2 -> d[x][y][z] == 7;
+                                case 3 -> d[x][y][z] == 4;
+                                case 4 -> d[x][y][z] == 11;
+                                case 5 -> d[x][y][z] == 10;
+                                case 6 -> d[x][y][z] == 9;
+                                case 7 -> d[x][y][z] == 8;
+                                case 8 -> d[x][y][z] == 2;
+                                case 9 -> d[x][y][z] == 1;
+                                case 10-> 0;
+                                case 11-> 3;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : xxxz, xzyy, yxxx, zy,   zzyx
+                            perms.get(0)[x][y][z] = switch (cube[z]                       [x]                       [-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 7;
+                                case 1 -> d[x][y][z] == 6;
+                                case 2 -> d[x][y][z] == 5;
+                                case 3 -> d[x][y][z] == 4;
+                                case 4 -> d[x][y][z] == 11;
+                                case 5 -> d[x][y][z] == 10;
+                                case 6 -> d[x][y][z] == 9;
+                                case 7 -> d[x][y][z] == 8;
+                                case 8 -> d[x][y][z] == 2;
+                                case 9 -> d[x][y][z] == 3;
+                                case 10-> 0;
+                                case 11-> 1;
+                                default -> d[x][y][z] == -1;
+                            };   //xy : xxzy, xz,   yxzz, yyyx, zyyy
+                            perms.get(0)[x][y][z] = switch (cube[z]                       [-(x-cube.length+1)]      [y]){
+                                case 0 -> d[x][y][z] == 5;
+                                case 1 -> d[x][y][z] == 6;
+                                case 2 -> d[x][y][z] == 7;
+                                case 3 -> d[x][y][z] == 4;
+                                case 4 -> d[x][y][z] == 9;
+                                case 5 -> d[x][y][z] == 10;
+                                case 6 -> d[x][y][z] == 11;
+                                case 7 -> d[x][y][z] == 8;
+                                case 8 -> d[x][y][z] == 0;
+                                case 9 -> d[x][y][z] == 1;
+                                case 10-> 2;
+                                case 11-> 3;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xxyx, xyxy, xyyz, xyzx, xzxx, yxyy, yyzy, yzxy, yzyz, yzzx, zxxy, zxyz, zxzx, zyzz, zzxz
+                            perms.get(0)[x][y][z] = switch (cube[z]                       [-(x-cube.length+1)]      [-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 7;
+                                case 1 -> d[x][y][z] == 6;
+                                case 2 -> d[x][y][z] == 5;
+                                case 3 -> d[x][y][z] == 4;
+                                case 4 -> d[x][y][z] == 9;
+                                case 5 -> d[x][y][z] == 10;
+                                case 6 -> d[x][y][z] == 11;
+                                case 7 -> d[x][y][z] == 8;
+                                case 8 -> d[x][y][z] == 0;
+                                case 9 -> d[x][y][z] == 3;
+                                case 10-> 2;
+                                case 11-> 1;
+                                default -> d[x][y][z] == -1;
+                            };   //00 : xzzz, yx,   yyxz, zyxx, zzzy*/
+                            if (!switch (cube[z]                           [y]                           [x]) {
+                                case 0 -> d[x][y][z] == 9;
+                                case 1 -> d[x][y][z] == 10;
+                                case 2 -> d[x][y][z] == 11;
+                                case 3 -> d[x][y][z] == 8;
+                                case 4 -> d[x][y][z] == 7;
+                                case 5 -> d[x][y][z] == 6;
+                                case 6 -> d[x][y][z] == 5;
+                                case 7 -> d[x][y][z] == 4;
+                                case 8 -> d[x][y][z] == 3;
+                                case 9 -> d[x][y][z] == 0;
+                                case 10 -> d[x][y][z] == 1;
+                                case 11 -> d[x][y][z] == 2;
+                                default -> d[x][y][z] == -1;
+                            })                           //xy : yyy
+                                contains.set(8, false);
+                            if (!switch (cube[z]                           [y]                           [-(x - cube.length + 1)]) {
+                                case 0 -> d[x][y][z] == 9;
+                                case 1 -> d[x][y][z] == 10;
+                                case 2 -> d[x][y][z] == 11;
+                                case 3 -> d[x][y][z] == 8;
+                                case 4 -> d[x][y][z] == 5;
+                                case 5 -> d[x][y][z] == 6;
+                                case 6 -> d[x][y][z] == 7;
+                                case 7 -> d[x][y][z] == 4;
+                                case 8 -> d[x][y][z] == 1;
+                                case 9 -> d[x][y][z] == 0;
+                                case 10 -> d[x][y][z] == 3;
+                                case 11 -> d[x][y][z] == 2;
+                                default -> d[x][y][z] == -1;
+                            })      //00 : y,    zyx
+                                contains.set(9, false);
+                            if (!switch (cube[z]                           [-(y - cube[x].length + 1)]   [x]) {
+                                case 0 -> d[x][y][z] == 11;
+                                case 1 -> d[x][y][z] == 10;
+                                case 2 -> d[x][y][z] == 9;
+                                case 3 -> d[x][y][z] == 8;
+                                case 4 -> d[x][y][z] == 7;
+                                case 5 -> d[x][y][z] == 6;
+                                case 6 -> d[x][y][z] == 5;
+                                case 7 -> d[x][y][z] == 4;
+                                case 8 -> d[x][y][z] == 3;
+                                case 9 -> d[x][y][z] == 2;
+                                case 10 -> d[x][y][z] == 1;
+                                case 11 -> d[x][y][z] == 0;
+                                default -> d[x][y][z] == -1;
+                            })                           //00 : yxx,  zzy
+                                contains.set(10, false);
+                            if (!switch (cube[z]                           [-(y - cube[x].length + 1)]   [-(x - cube.length + 1)]) {
+                                case 0 -> d[x][y][z] == 11;
+                                case 1 -> d[x][y][z] == 10;
+                                case 2 -> d[x][y][z] == 9;
+                                case 3 -> d[x][y][z] == 8;
+                                case 4 -> d[x][y][z] == 5;
+                                case 5 -> d[x][y][z] == 6;
+                                case 6 -> d[x][y][z] == 7;
+                                case 7 -> d[x][y][z] == 4;
+                                case 8 -> d[x][y][z] == 1;
+                                case 9 -> d[x][y][z] == 2;
+                                case 10 -> d[x][y][z] == 3;
+                                case 11 -> d[x][y][z] == 0;
+                                default -> d[x][y][z] == -1;
+                            })      //xy : xxy,  xyz,  xzx,  yzz,  zxz
+                                contains.set(11, false);
+                            /*perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][x]                       [y]){
+                                case 0 -> d[x][y][z] == 5;
+                                case 1 -> d[x][y][z] == 4;
+                                case 2 -> d[x][y][z] == 7;
+                                case 3 -> d[x][y][z] == 6;
+                                case 4 -> d[x][y][z] == 11;
+                                case 5 -> d[x][y][z] == 8;
+                                case 6 -> d[x][y][z] == 9;
+                                case 7 -> d[x][y][z] == 10;
+                                case 8 -> d[x][y][z] == 2;
+                                case 9 -> d[x][y][z] == 1;
+                                case 10-> 0;
+                                case 11-> 3;
+                                default -> d[x][y][z] == -1;
+                            };                       //xy : xxxz, xzyy, yxxx, zy,   zzyx
+                            perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][x]                       [-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 7;
+                                case 1 -> d[x][y][z] == 4;
+                                case 2 -> d[x][y][z] == 5;
+                                case 3 -> d[x][y][z] == 6;
+                                case 4 -> d[x][y][z] == 11;
+                                case 5 -> d[x][y][z] == 8;
+                                case 6 -> d[x][y][z] == 9;
+                                case 7 -> d[x][y][z] == 10;
+                                case 8 -> d[x][y][z] == 2;
+                                case 9 -> d[x][y][z] == 3;
+                                case 10-> 0;
+                                case 11-> 1;
+                                default -> d[x][y][z] == -1;
+                            };   //00 : xxzy, xz,   yxzz, yyyx, zyyy
+                            perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(x-cube.length+1)]      [-(y-cube[x].length+1)]){
+                                case 0 -> d[x][y][z] == 7;
+                                case 1 -> d[x][y][z] == 4;
+                                case 2 -> d[x][y][z] == 5;
+                                case 3 -> d[x][y][z] == 6;
+                                case 4 -> d[x][y][z] == 9;
+                                case 5 -> d[x][y][z] == 8;
+                                case 6 -> d[x][y][z] == 11;
+                                case 7 -> d[x][y][z] == 10;
+                                case 8 -> d[x][y][z] == 0;
+                                case 9 -> d[x][y][z] == 3;
+                                case 10-> 2;
+                                case 11-> 1;
+                                default -> d[x][y][z] == -1;
+                            };   //xy : xzzz, yx,   yyxz, zyxx, zzzy
+                            perms.get(0)[x][y][z] = switch (cube[-(z-cube[x][y].length+1)][-(x-cube.length+1)]      [y]){
+                                case 0 -> d[x][y][z] == 5;
+                                case 1 -> d[x][y][z] == 4;
+                                case 2 -> d[x][y][z] == 7;
+                                case 3 -> d[x][y][z] == 6;
+                                case 4 -> d[x][y][z] == 9;
+                                case 5 -> d[x][y][z] == 8;
+                                case 6 -> d[x][y][z] == 11;
+                                case 7 -> d[x][y][z] == 10;
+                                case 8 -> d[x][y][z] == 0;
+                                case 9 -> d[x][y][z] == 1;
+                                case 10-> 2;
+                                case 11-> 3;
+                                default -> d[x][y][z] == -1;
+                            };                       //00 : xxyx, xyxy, xyyz, xyzx, xzxx, yxyy, yyzy, yzxy, yzyz, yzzx, zxxy, zxyz, zxzx, zyzz, zzxz*/
+                            if (!switch (cube[-(z - cube[x][y].length + 1)][y]                           [x]) {
+                                case 0 -> d[x][y][z] == 9;
+                                case 1 -> d[x][y][z] == 8;
+                                case 2 -> d[x][y][z] == 11;
+                                case 3 -> d[x][y][z] == 10;
+                                case 4 -> d[x][y][z] == 7;
+                                case 5 -> d[x][y][z] == 4;
+                                case 6 -> d[x][y][z] == 5;
+                                case 7 -> d[x][y][z] == 6;
+                                case 8 -> d[x][y][z] == 3;
+                                case 9 -> d[x][y][z] == 0;
+                                case 10 -> d[x][y][z] == 1;
+                                case 11 -> d[x][y][z] == 2;
+                                default -> d[x][y][z] == -1;
+                            })                           //00 : yyy
+                                contains.set(12, false);
+                            if (!switch (cube[-(z - cube[x][y].length + 1)][y]                           [-(x - cube.length + 1)]) {
+                                case 0 -> d[x][y][z] == 9;
+                                case 1 -> d[x][y][z] == 8;
+                                case 2 -> d[x][y][z] == 11;
+                                case 3 -> d[x][y][z] == 10;
+                                case 4 -> d[x][y][z] == 5;
+                                case 5 -> d[x][y][z] == 4;
+                                case 6 -> d[x][y][z] == 7;
+                                case 7 -> d[x][y][z] == 6;
+                                case 8 -> d[x][y][z] == 1;
+                                case 9 -> d[x][y][z] == 0;
+                                case 10 -> d[x][y][z] == 3;
+                                case 11 -> d[x][y][z] == 2;
+                                default -> d[x][y][z] == -1;
+                            })      //xy : y,    zyx
+                                contains.set(13, false);
+                            if (!switch (cube[-(z - cube[x][y].length + 1)][-(y - cube[x].length + 1)]   [x]) {
+                                case 0 -> d[x][y][z] == 11;
+                                case 1 -> d[x][y][z] == 8;
+                                case 2 -> d[x][y][z] == 9;
+                                case 3 -> d[x][y][z] == 10;
+                                case 4 -> d[x][y][z] == 7;
+                                case 5 -> d[x][y][z] == 4;
+                                case 6 -> d[x][y][z] == 5;
+                                case 7 -> d[x][y][z] == 6;
+                                case 8 -> d[x][y][z] == 3;
+                                case 9 -> d[x][y][z] == 2;
+                                case 10 -> d[x][y][z] == 1;
+                                case 11 -> d[x][y][z] == 0;
+                                default -> d[x][y][z] == -1;
+                            })                           //xy : yxx,  zzy
+                                contains.set(14, false);
+                            if (!switch (cube[-(z - cube[x][y].length + 1)][-(y - cube[x].length + 1)]   [-(x - cube.length + 1)]) {
+                                case 0 -> d[x][y][z] == 11;
+                                case 1 -> d[x][y][z] == 8;
+                                case 2 -> d[x][y][z] == 9;
+                                case 3 -> d[x][y][z] == 10;
+                                case 4 -> d[x][y][z] == 5;
+                                case 5 -> d[x][y][z] == 4;
+                                case 6 -> d[x][y][z] == 7;
+                                case 7 -> d[x][y][z] == 6;
+                                case 8 -> d[x][y][z] == 1;
+                                case 9 -> d[x][y][z] == 2;
+                                case 10 -> d[x][y][z] == 3;
+                                case 11 -> d[x][y][z] == 0;
+                                default -> d[x][y][z] == -1;
+                            })      //00 : xxy,  xyz,  xzx,  yzz,  zxz
+                                contains.set(15, false);
+                            contained = contains.contains(true);
+                        }
+                    }
+            if(contained)
+            {
+                kill++;
+                break;
+            }
+        }
+        return contained;
     }
 }
