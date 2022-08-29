@@ -170,7 +170,7 @@ public class SolutionState
         }
         Main.print("\n");*/
     }
-    public ArrayList<Point> updateFrontier (ArrayList<Point> newExplored)
+    public void updateFrontier (ArrayList<Point> newExplored)
     {
         lastFrontier.clear();
         lastFrontier.addAll(cubeFrontier);
@@ -243,7 +243,6 @@ public class SolutionState
             Main.print(point.toString());
         }
         Main.print("\n");*/
-        return newFrontier;
     }
     public boolean problems()
     {
