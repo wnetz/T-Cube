@@ -5,29 +5,35 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class Solve
 {
     public final int PRINT_TO;
-    public final int HEIGHT = 4;
-    ArrayList<int[][][]> deadEnd;
-    ArrayList<int[][][]> knownSolutions;
-    FileWriter solutionFile;
-    FileWriter file;
-    long time;
-    int dead = 0;
-    int kill = 0;
-    static ArrayList<int[][][]> solutions;
+    private final int HEIGHT = 2;
+    private List<int[][][]> deadEnd;
+    private List<int[][][]> knownSolutions;
+    private FileWriter solutionFile;
+    private FileWriter file;
+    private long time;
+    private int dead = 0;
+    private int kill = 0;
+    private final int THREAD_COUNT = 10;
+    private int threadCount;
+    private static List<int[][][]> solutions;
+    ReentrantLock lock = new ReentrantLock();
     
     public Solve(int p, FileWriter f) throws IOException
     {
+        threadCount = 1;
         solutionFile = new FileWriter("solutions.txt");
         PRINT_TO = p;
         file = f;
-        deadEnd = new ArrayList<>();
-        solutions = new ArrayList<>();
+        deadEnd = Collections.synchronizedList(new ArrayList<>());
+        solutions = Collections.synchronizedList(new ArrayList<>());
         int[][][] cube = new int [6][HEIGHT][6];
         for(int x = 0; x < 6; x++)
             for(int y = 0; y < HEIGHT; y++)
@@ -130,7 +136,7 @@ public class Solve
      *
      * @param cube to be printed to file
      */
-    public  void printCube(int[][][] cube, FileWriter file) throws IOException
+    public  void printCube(int[][][] cube, FileWriter file)
     {
         for (int y = 0; y < HEIGHT; y++)
         {
@@ -152,13 +158,23 @@ public class Solve
 
                 layer.append("\n");
             }
-            if (!allEmpty && PRINT_TO != 0)
-                file.write(""+ layer);
+            if (!allEmpty && PRINT_TO != 0) {
+                try {
+                    file.write(""+ layer );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             else if(!allEmpty &&PRINT_TO == 0)
                 System.out.print(layer + "\n");
         }
-        if (PRINT_TO != 0)
-            file.write("########################################################\n");
+        if (PRINT_TO != 0) {
+            try {
+                file.write("########################################################\n");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         else
             System.out.print("########################################################\n");
     }
@@ -908,26 +924,28 @@ public class Solve
     }
 
 
-    public void recursiveSolve(SolutionState solution, int depth)
-    {
+    public void recursiveSolve(SolutionState solution, int depth) {
         ArrayList<Point> oldCubeFrontier = solution.getCubeFrontier();
         ArrayList<Point> oldCubeExplored = solution.getCubeExplored();
-
-        //Main.print("depth: " + depth + "\n");
+        ArrayList<Thread> threads = new ArrayList<>();
+        //System.out.println(depth + " " + Thread.currentThread().getName());
         //try every point in the frontier
         for(Point point : oldCubeFrontier)
         {
-            //Main.print("rotation: " + rotation++ + "\n");
-
             int orientation = -1;
             //try every orientation on point
             while (orientation != -2)
             {
+                lock.lock();
                 orientation = solution.addT(point, orientation);
-
+                ArrayList<Point> savedFrontier = solution.getCubeFrontier();
+                ArrayList<Point> savedExplored = solution.getCubeExplored();
+                int[][][] savedCube = solution.getCube();
+                boolean inDead = deadContains(solution.getCube());
+                lock.unlock();
                 //Main.print("orientation: " + orientation + "\n");
                 //if already explored
-                if(orientation != -2 && deadContains(solution.getCube()))
+                if(orientation != -2 && inDead)
                 {
                     solution.removeT(point, orientation);
                     solution.setCubeFrontier(oldCubeFrontier);
@@ -940,7 +958,16 @@ public class Solve
 
                     if (solution.getCubeFrontier().size() > 0)
                     {
-                        recursiveSolve(new SolutionState(solution.getCubeFrontier(), solution.getCubeExplored(), solution.getCube()), depth + 1);
+                        if(threadCount < THREAD_COUNT)
+                        {
+                            threadCount++;
+                            threads.add(new Thread(()-> recursiveSolve(new SolutionState(savedFrontier, savedExplored, savedCube), depth + 1)));
+                            threads.get(threads.size()-1).start();
+                        }
+                        else
+                        {
+                            recursiveSolve(new SolutionState(savedFrontier, savedExplored, savedCube), depth + 1);
+                        }
 
                         solution.removeT(point, orientation);
                         solution.setCubeFrontier(oldCubeFrontier);
@@ -949,6 +976,8 @@ public class Solve
                     else
                     {
                         solutions.add(solution.getCube());
+
+                        //printCube(solution.getCube(), solutionFile);
                         if(solutions.size()%100 == 0)
                         {
                             System.out.println("solutions " + solutions.size() + " " + (System.nanoTime() - time) / 60000000000.0);
@@ -958,7 +987,18 @@ public class Solve
                 }
                 else
                 {
+                    for(Thread thread: threads)
+                    {
+                        try {
+                            thread.join();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        threadCount--;
+                    }
+                    lock.lock();
                     addDead(solution.getCube());
+                    lock.unlock();
                     return;
                 }
             }
@@ -1016,7 +1056,7 @@ public class Solve
                 break;
             }
         }
-        if(!contained)
+        /*if(!contained)
         {
             for (int[][][] s : knownSolutions)
             {
@@ -1028,7 +1068,7 @@ public class Solve
                     break;
                 }
             }
-        }
+        }*/
         return contained;
     }
 
