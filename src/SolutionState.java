@@ -5,6 +5,7 @@ public class SolutionState
 {
     private int[][][] cube;
     private ArrayList<Point> cubeFrontier, cubeExplored, lastFrontier, lastExplored;
+    private ArrayList<T> fill;
     public final int[][][] orientations =
             {
                     //             x1:0                               x2:1                               x3:2                               x4:3
@@ -47,8 +48,9 @@ public class SolutionState
         cubeExplored = new ArrayList<>();
         lastFrontier = new ArrayList<>();
         lastExplored = new ArrayList<>();
+        fill = new ArrayList<>();
     }
-    public SolutionState(ArrayList<Point> front, ArrayList<Point> explored, int[][][] c)
+    public SolutionState(ArrayList<Point> front, ArrayList<Point> explored, int[][][] c, ArrayList<T> tc)
     {
         cube = new int [6][c[0].length][6];
         for(int x = 0; x < c.length; x++)
@@ -64,6 +66,8 @@ public class SolutionState
         cubeExplored.addAll(explored);
         lastFrontier = new ArrayList<>();
         lastExplored = new ArrayList<>();
+        fill = new ArrayList<>();
+        fill.addAll(tc);
     }
     public int addT(Point point, int  ori)
     {
@@ -88,7 +92,7 @@ public class SolutionState
                 updateFrontier(points);
                 if(problems())
                 {
-                    removeT(points);
+                    removeT(point,i);
                     cubeExplored.clear();
                     cubeExplored.addAll(lastExplored);
                     cubeFrontier.clear();
@@ -97,6 +101,27 @@ public class SolutionState
                 else
                 {
                     orientation = i;
+                    Point addPoint = switch (orientation)
+                    {
+                        case 12, 16 -> new Point(point.x()-1,point.y()-1,point.z());
+                        case 13, 20 -> new Point(point.x()-1,point.y(),point.z()-1);
+                        case 14 -> new Point(point.x()-1,point.y()+1,point.z());
+                        case 15 -> new Point(point.x()-1,point.y(),point.z()+1);
+                        case 17, 21 -> new Point(point.x(),point.y()-1,point.z()-1);
+                        case 18 -> new Point(point.x()+1,point.y()-1,point.z());
+                        case 19 -> new Point(point.x(),point.y()-1,point.z()+1);
+                        case 22 -> new Point(point.x()+1,point.y(),point.z()-1);
+                        case 23 -> new Point(point.x(),point.y()+1,point.z()-1);
+                        case 24, 25, 26, 27 -> new Point(point.x()-2,point.y(),point.z());
+                        case 28, 29, 30, 31 -> new Point(point.x(),point.y()-2,point.z());
+                        case 32, 33, 34, 35 -> new Point(point.x(),point.y(),point.z()-2);
+                        case 36, 37, 38, 39 -> new Point(point.x()-1,point.y(),point.z());
+                        case 40, 41, 42, 43 -> new Point(point.x(),point.y()-1,point.z());
+                        case 44, 45, 46, 47 -> new Point(point.x(),point.y(),point.z()-1);
+                        default -> new Point(point.x(),point.y(),point.z());
+                    };
+                    T addT = new T(addPoint,i%12);
+                    fill.add(addT);
                     break;
                 }
             }
@@ -112,6 +137,7 @@ public class SolutionState
     {
         //Main.print("removeT "+ point + " orientation " + orientation + "\n");
         cube[point.x()][point.y()][point.z()] = -1;
+        fill.remove(new T(point,orientation));
         //Main.print(point + " = "+-1 + "\n");
         for(int j = 0; j < 3; j++)
         {
@@ -174,14 +200,6 @@ public class SolutionState
     {
         lastFrontier.clear();
         lastFrontier.addAll(cubeFrontier);
-        //remove newExplored points from frontier
-        /*cubeFrontier.removeAll(newExplored);
-
-        //Main.print("frontier -  newExplored:" + "\n");
-        for(Point point :cubeFrontier)
-        {
-            //Main.print(point.toString());
-        }
         //Main.print("\n");*/
 
         //get all possible new frontier points in range
@@ -269,6 +287,10 @@ public class SolutionState
             }
         }
         return c;
+    }
+    public ArrayList<T> getTCube()
+    {
+        return fill;
     }
     public ArrayList<Point> getCubeFrontier()
     {

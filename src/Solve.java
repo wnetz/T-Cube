@@ -11,8 +11,10 @@ import java.util.stream.Collectors;
 public class Solve
 {
     public final int PRINT_TO;
-    public final int HEIGHT = 4;
+    public final int HEIGHT = 2;
+    public final int ROTATIONS;
     ArrayList<int[][][]> deadEnd;
+    ArrayList<ArrayList<T>> deadT;
     ArrayList<int[][][]> knownSolutions;
     FileWriter solutionFile;
     FileWriter file;
@@ -23,17 +25,20 @@ public class Solve
     
     public Solve(int p, FileWriter f) throws IOException
     {
+        Point.setHeight(HEIGHT-1);
+        ROTATIONS = HEIGHT == 6 ? 47 : 15;
         solutionFile = new FileWriter("solutions.txt");
         PRINT_TO = p;
         file = f;
         deadEnd = new ArrayList<>();
+        deadT = new ArrayList<>();
         solutions = new ArrayList<>();
         int[][][] cube = new int [6][HEIGHT][6];
         for(int x = 0; x < 6; x++)
             for(int y = 0; y < HEIGHT; y++)
                 for(int z = 0; z < 6; z++)
                     cube[x][y][z] = -1;
-        knownSolutions = readSolutions();
+        //knownSolutions = readSolutions();
         System.out.println("start");
         time = System.nanoTime();
         recursiveSolve(new SolutionState(cube),0);
@@ -927,7 +932,8 @@ public class Solve
 
                 //Main.print("orientation: " + orientation + "\n");
                 //if already explored
-                if(orientation != -2 && deadContains(solution.getCube()))
+                //if(orientation != -2 && deadContains(solution.getCube()))
+                if(orientation != -2 && deadContains(solution.getTCube()))
                 {
                     solution.removeT(point, orientation);
                     solution.setCubeFrontier(oldCubeFrontier);
@@ -940,7 +946,7 @@ public class Solve
 
                     if (solution.getCubeFrontier().size() > 0)
                     {
-                        recursiveSolve(new SolutionState(solution.getCubeFrontier(), solution.getCubeExplored(), solution.getCube()), depth + 1);
+                        recursiveSolve(new SolutionState(solution.getCubeFrontier(), solution.getCubeExplored(), solution.getCube(), solution.getTCube()), depth + 1);
 
                         solution.removeT(point, orientation);
                         solution.setCubeFrontier(oldCubeFrontier);
@@ -958,7 +964,8 @@ public class Solve
                 }
                 else
                 {
-                    addDead(solution.getCube());
+                    //addDead(solution.getCube());
+                    addDead(solution.getTCube());
                     return;
                 }
             }
@@ -981,7 +988,7 @@ public class Solve
         {
             for (int d = 0; d < deadEnd.size(); d++)
             {
-                contain_empty = contains(cube,deadEnd.get(d));
+                contain_empty = contains(deadEnd.get(d),cube);
                 if (contain_empty[0] && ! contain_empty[1])
                 {
                     if (!added)
@@ -1009,18 +1016,18 @@ public class Solve
         boolean contained = false;
         for (int[][][] d : deadEnd)
         {
-            contained = contains(d,cube)[0];
+            contained = contains(cube,d)[0];
             if(contained)
             {
                 kill++;
                 break;
             }
         }
-        if(!contained)
+        /*if(!contained)
         {
             for (int[][][] s : knownSolutions)
             {
-                contained = contains(s,cube)[0];
+                contained = contains(cube,s)[0];
                 if(contained)
                 {
                     kill++;
@@ -1028,17 +1035,16 @@ public class Solve
                     break;
                 }
             }
-        }
+        }*/
         return contained;
     }
-
     /***
      *
-     * @param c1 smaller cube
-     * @param c2 larger cube
-     * @return returns true if c2 contains any permutations of c1
+     * @param large larger cube
+     * @param small small cube
+     * @return returns true if small contains any permutations of large
      */
-    public boolean[] contains(int[][][] c1, int[][][] c2)
+    public boolean[] contains(int[][][] large, int[][][] small)
     {
         ArrayList<Boolean> contains = new ArrayList<>();
         for(int i = 0; i < 16; i++)
@@ -1051,734 +1057,824 @@ public class Solve
             for (int y = 0; y < HEIGHT && contained; y++)
                 for (int z = 0; z < 6 && contained; z++)
                 {
-                    if(c1[x][y][z] != -1)
+                    if(large[x][y][z] != -1)
                     {
                         empty = false;
-                        if (c1[x][y][z] != c2[x][y][z])
+                        if (large[x][y][z] != small[x][y][z])
                             contains.set(0, false);
-                        if (!switch (c2[x]                           [y]                           [-(z - c2[x][y].length + 1)]) {
-                            case 0 -> c1[x][y][z] == 0;
-                            case 1 -> c1[x][y][z] == 3;
-                            case 2 -> c1[x][y][z] == 2;
-                            case 3 -> c1[x][y][z] == 1;
-                            case 4 -> c1[x][y][z] == 4;
-                            case 5 -> c1[x][y][z] == 7;
-                            case 6 -> c1[x][y][z] == 6;
-                            case 7 -> c1[x][y][z] == 5;
-                            case 8 -> c1[x][y][z] == 8;
-                            case 9 -> c1[x][y][z] == 9;
-                            case 10 -> c1[x][y][z] == 10;
-                            case 11 -> c1[x][y][z] == 11;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[x]                           [y]                           [-(z - small[x][y].length + 1)]) {
+                            case 0 -> large[x][y][z] == 0;
+                            case 1 -> large[x][y][z] == 3;
+                            case 2 -> large[x][y][z] == 2;
+                            case 3 -> large[x][y][z] == 1;
+                            case 4 -> large[x][y][z] == 4;
+                            case 5 -> large[x][y][z] == 7;
+                            case 6 -> large[x][y][z] == 6;
+                            case 7 -> large[x][y][z] == 5;
+                            case 8 -> large[x][y][z] == 8;
+                            case 9 -> large[x][y][z] == 9;
+                            case 10 -> large[x][y][z] == 10;
+                            case 11 -> large[x][y][z] == 11;
+                            default -> large[x][y][z] == -1;
                         })//xy : 00
                             contains.set(1, false);
-                        if (!switch (c2[x]                           [-(y - c2[x].length + 1)]   [z]) {
-                            case 0 -> c1[x][y][z] == 2;
-                            case 1 -> c1[x][y][z] == 1;
-                            case 2 -> c1[x][y][z] == 0;
-                            case 3 -> c1[x][y][z] == 3;
-                            case 4 -> c1[x][y][z] == 4;
-                            case 5 -> c1[x][y][z] == 5;
-                            case 6 -> c1[x][y][z] == 6;
-                            case 7 -> c1[x][y][z] == 7;
-                            case 8 -> c1[x][y][z] == 8;
-                            case 9 -> c1[x][y][z] == 11;
-                            case 10 -> c1[x][y][z] == 10;
-                            case 11 -> c1[x][y][z] == 9;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[x]                           [-(y - small[x].length + 1)]   [z]) {
+                            case 0 -> large[x][y][z] == 2;
+                            case 1 -> large[x][y][z] == 1;
+                            case 2 -> large[x][y][z] == 0;
+                            case 3 -> large[x][y][z] == 3;
+                            case 4 -> large[x][y][z] == 4;
+                            case 5 -> large[x][y][z] == 5;
+                            case 6 -> large[x][y][z] == 6;
+                            case 7 -> large[x][y][z] == 7;
+                            case 8 -> large[x][y][z] == 8;
+                            case 9 -> large[x][y][z] == 11;
+                            case 10 -> large[x][y][z] == 10;
+                            case 11 -> large[x][y][z] == 9;
+                            default -> large[x][y][z] == -1;
                         })                           //xy : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
                             contains.set(2, false);
-                        if (!switch (c2[x]                           [-(y - c2[x].length + 1)]   [-(z - c2[x][y].length + 1)]) {
-                            case 0 -> c1[x][y][z] == 2;
-                            case 1 -> c1[x][y][z] == 3;
-                            case 2 -> c1[x][y][z] == 0;
-                            case 3 -> c1[x][y][z] == 1;
-                            case 4 -> c1[x][y][z] == 4;
-                            case 5 -> c1[x][y][z] == 7;
-                            case 6 -> c1[x][y][z] == 6;
-                            case 7 -> c1[x][y][z] == 5;
-                            case 8 -> c1[x][y][z] == 8;
-                            case 9 -> c1[x][y][z] == 11;
-                            case 10 -> c1[x][y][z] == 10;
-                            case 11 -> c1[x][y][z] == 9;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[x]                           [-(y - small[x].length + 1)]   [-(z - small[x][y].length + 1)]) {
+                            case 0 -> large[x][y][z] == 2;
+                            case 1 -> large[x][y][z] == 3;
+                            case 2 -> large[x][y][z] == 0;
+                            case 3 -> large[x][y][z] == 1;
+                            case 4 -> large[x][y][z] == 4;
+                            case 5 -> large[x][y][z] == 7;
+                            case 6 -> large[x][y][z] == 6;
+                            case 7 -> large[x][y][z] == 5;
+                            case 8 -> large[x][y][z] == 8;
+                            case 9 -> large[x][y][z] == 11;
+                            case 10 -> large[x][y][z] == 10;
+                            case 11 -> large[x][y][z] == 9;
+                            default -> large[x][y][z] == -1;
                         })//00 : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
                             contains.set(3, false);
-                            /*perms.get(0)[x][y][z] = switch (c2[x]                       [z]                       [y]){
-                                case 0 -> c1[x][y][z] == 1;
-                                case 1 -> c1[x][y][z] == 0;
-                                case 2 -> c1[x][y][z] == 3;
-                                case 3 -> c1[x][y][z] == 2;
-                                case 4 -> c1[x][y][z] == 8;
-                                case 5 -> c1[x][y][z] == 9;
-                                case 6 -> c1[x][y][z] == 10;
-                                case 7 -> c1[x][y][z] == 11;
-                                case 8 -> c1[x][y][z] == 4;
-                                case 9 -> c1[x][y][z] == 5;
+                            /*perms.get(0)[x][y][z] = switch (small[x]                       [z]                       [y]){
+                                case 0 -> large[x][y][z] == 1;
+                                case 1 -> large[x][y][z] == 0;
+                                case 2 -> large[x][y][z] == 3;
+                                case 3 -> large[x][y][z] == 2;
+                                case 4 -> large[x][y][z] == 8;
+                                case 5 -> large[x][y][z] == 9;
+                                case 6 -> large[x][y][z] == 10;
+                                case 7 -> large[x][y][z] == 11;
+                                case 8 -> large[x][y][z] == 4;
+                                case 9 -> large[x][y][z] == 5;
                                 case 10-> 6;
                                 case 11-> 7;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xxx
-                            perms.get(0)[x][y][z] = switch (c2[x]                       [z]                       [-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 3;
-                                case 1 -> c1[x][y][z] == 0;
-                                case 2 -> c1[x][y][z] == 1;
-                                case 3 -> c1[x][y][z] == 2;
-                                case 4 -> c1[x][y][z] == 8;
-                                case 5 -> c1[x][y][z] == 9;
-                                case 6 -> c1[x][y][z] == 10;
-                                case 7 -> c1[x][y][z] == 11;
-                                case 8 -> c1[x][y][z] == 4;
-                                case 9 -> c1[x][y][z] == 7;
+                            perms.get(0)[x][y][z] = switch (small[x]                       [z]                       [-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 3;
+                                case 1 -> large[x][y][z] == 0;
+                                case 2 -> large[x][y][z] == 1;
+                                case 3 -> large[x][y][z] == 2;
+                                case 4 -> large[x][y][z] == 8;
+                                case 5 -> large[x][y][z] == 9;
+                                case 6 -> large[x][y][z] == 10;
+                                case 7 -> large[x][y][z] == 11;
+                                case 8 -> large[x][y][z] == 4;
+                                case 9 -> large[x][y][z] == 7;
                                 case 10-> 6;
                                 case 11-> 5;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //00 : x,    yxz
-                            perms.get(0)[x][y][z] = switch (c2[x]                       [-(z-c2[x][y].length+1)][y]){
-                                case 0 -> c1[x][y][z] == 1;
-                                case 1 -> c1[x][y][z] == 2;
-                                case 2 -> c1[x][y][z] == 3;
-                                case 3 -> c1[x][y][z] == 0;
-                                case 4 -> c1[x][y][z] == 8;
-                                case 5 -> c1[x][y][z] == 11;
-                                case 6 -> c1[x][y][z] == 10;
-                                case 7 -> c1[x][y][z] == 9;
-                                case 8 -> c1[x][y][z] == 4;
-                                case 9 -> c1[x][y][z] == 5;
+                            perms.get(0)[x][y][z] = switch (small[x]                       [-(z-small[x][y].length+1)][y]){
+                                case 0 -> large[x][y][z] == 1;
+                                case 1 -> large[x][y][z] == 2;
+                                case 2 -> large[x][y][z] == 3;
+                                case 3 -> large[x][y][z] == 0;
+                                case 4 -> large[x][y][z] == 8;
+                                case 5 -> large[x][y][z] == 11;
+                                case 6 -> large[x][y][z] == 10;
+                                case 7 -> large[x][y][z] == 9;
+                                case 8 -> large[x][y][z] == 4;
+                                case 9 -> large[x][y][z] == 5;
                                 case 10-> 6;
                                 case 11-> 7;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : xxx
-                            perms.get(0)[x][y][z] = switch (c2[x]                       [-(z-c2[x][y].length+1)][-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 3;
-                                case 1 -> c1[x][y][z] == 2;
-                                case 2 -> c1[x][y][z] == 1;
-                                case 3 -> c1[x][y][z] == 0;
-                                case 4 -> c1[x][y][z] == 8;
-                                case 5 -> c1[x][y][z] == 11;
-                                case 6 -> c1[x][y][z] == 10;
-                                case 7 -> c1[x][y][z] == 9;
-                                case 8 -> c1[x][y][z] == 4;
-                                case 9 -> c1[x][y][z] == 7;
+                            perms.get(0)[x][y][z] = switch (small[x]                       [-(z-small[x][y].length+1)][-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 3;
+                                case 1 -> large[x][y][z] == 2;
+                                case 2 -> large[x][y][z] == 1;
+                                case 3 -> large[x][y][z] == 0;
+                                case 4 -> large[x][y][z] == 8;
+                                case 5 -> large[x][y][z] == 11;
+                                case 6 -> large[x][y][z] == 10;
+                                case 7 -> large[x][y][z] == 9;
+                                case 8 -> large[x][y][z] == 4;
+                                case 9 -> large[x][y][z] == 7;
                                 case 10-> 6;
                                 case 11-> 5;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //xy : x,    yxz*/
-                        if (!switch (c2[-(x - c2.length + 1)]      [y]                           [z]) {
-                            case 0 -> c1[x][y][z] == 0;
-                            case 1 -> c1[x][y][z] == 1;
-                            case 2 -> c1[x][y][z] == 2;
-                            case 3 -> c1[x][y][z] == 3;
-                            case 4 -> c1[x][y][z] == 6;
-                            case 5 -> c1[x][y][z] == 5;
-                            case 6 -> c1[x][y][z] == 4;
-                            case 7 -> c1[x][y][z] == 7;
-                            case 8 -> c1[x][y][z] == 10;
-                            case 9 -> c1[x][y][z] == 9;
-                            case 10 -> c1[x][y][z] == 8;
-                            case 11 -> c1[x][y][z] == 11;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(x - small.length + 1)]      [y]                           [z]) {
+                            case 0 -> large[x][y][z] == 0;
+                            case 1 -> large[x][y][z] == 1;
+                            case 2 -> large[x][y][z] == 2;
+                            case 3 -> large[x][y][z] == 3;
+                            case 4 -> large[x][y][z] == 6;
+                            case 5 -> large[x][y][z] == 5;
+                            case 6 -> large[x][y][z] == 4;
+                            case 7 -> large[x][y][z] == 7;
+                            case 8 -> large[x][y][z] == 10;
+                            case 9 -> large[x][y][z] == 9;
+                            case 10 -> large[x][y][z] == 8;
+                            case 11 -> large[x][y][z] == 11;
+                            default -> large[x][y][z] == -1;
                         })                           //xy : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
                             contains.set(4, false);
-                        if (!switch (c2[-(x - c2.length + 1)]      [y]                           [-(z - c2[x][y].length + 1)]) {
-                            case 0 -> c1[x][y][z] == 0;
-                            case 1 -> c1[x][y][z] == 3;
-                            case 2 -> c1[x][y][z] == 2;
-                            case 3 -> c1[x][y][z] == 1;
-                            case 4 -> c1[x][y][z] == 6;
-                            case 5 -> c1[x][y][z] == 7;
-                            case 6 -> c1[x][y][z] == 4;
-                            case 7 -> c1[x][y][z] == 5;
-                            case 8 -> c1[x][y][z] == 10;
-                            case 9 -> c1[x][y][z] == 9;
-                            case 10 -> c1[x][y][z] == 8;
-                            case 11 -> c1[x][y][z] == 11;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(x - small.length + 1)]      [y]                           [-(z - small[x][y].length + 1)]) {
+                            case 0 -> large[x][y][z] == 0;
+                            case 1 -> large[x][y][z] == 3;
+                            case 2 -> large[x][y][z] == 2;
+                            case 3 -> large[x][y][z] == 1;
+                            case 4 -> large[x][y][z] == 6;
+                            case 5 -> large[x][y][z] == 7;
+                            case 6 -> large[x][y][z] == 4;
+                            case 7 -> large[x][y][z] == 5;
+                            case 8 -> large[x][y][z] == 10;
+                            case 9 -> large[x][y][z] == 9;
+                            case 10 -> large[x][y][z] == 8;
+                            case 11 -> large[x][y][z] == 11;
+                            default -> large[x][y][z] == -1;
                         })//00 : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
                             contains.set(5, false);
-                        if (!switch (c2[-(x - c2.length + 1)]      [-(y - c2[x].length + 1)]   [z]) {
-                            case 0 -> c1[x][y][z] == 2;
-                            case 1 -> c1[x][y][z] == 1;
-                            case 2 -> c1[x][y][z] == 0;
-                            case 3 -> c1[x][y][z] == 3;
-                            case 4 -> c1[x][y][z] == 6;
-                            case 5 -> c1[x][y][z] == 5;
-                            case 6 -> c1[x][y][z] == 4;
-                            case 7 -> c1[x][y][z] == 7;
-                            case 8 -> c1[x][y][z] == 10;
-                            case 9 -> c1[x][y][z] == 11;
-                            case 10 -> c1[x][y][z] == 8;
-                            case 11 -> c1[x][y][z] == 9;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(x - small.length + 1)]      [-(y - small[x].length + 1)]   [z]) {
+                            case 0 -> large[x][y][z] == 2;
+                            case 1 -> large[x][y][z] == 1;
+                            case 2 -> large[x][y][z] == 0;
+                            case 3 -> large[x][y][z] == 3;
+                            case 4 -> large[x][y][z] == 6;
+                            case 5 -> large[x][y][z] == 5;
+                            case 6 -> large[x][y][z] == 4;
+                            case 7 -> large[x][y][z] == 7;
+                            case 8 -> large[x][y][z] == 10;
+                            case 9 -> large[x][y][z] == 11;
+                            case 10 -> large[x][y][z] == 8;
+                            case 11 -> large[x][y][z] == 9;
+                            default -> large[x][y][z] == -1;
                         })                           //00 : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
                             contains.set(6, false);
-                        if (!switch (c2[-(x - c2.length + 1)]      [-(y - c2[x].length + 1)]   [-(z - c2[x][y].length + 1)]) {
-                            case 0 -> c1[x][y][z] == 2;
-                            case 1 -> c1[x][y][z] == 3;
-                            case 2 -> c1[x][y][z] == 0;
-                            case 3 -> c1[x][y][z] == 1;
-                            case 4 -> c1[x][y][z] == 6;
-                            case 5 -> c1[x][y][z] == 7;
-                            case 6 -> c1[x][y][z] == 4;
-                            case 7 -> c1[x][y][z] == 5;
-                            case 8 -> c1[x][y][z] == 10;
-                            case 9 -> c1[x][y][z] == 11;
-                            case 10 -> c1[x][y][z] == 8;
-                            case 11 -> c1[x][y][z] == 9;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(x - small.length + 1)]      [-(y - small[x].length + 1)]   [-(z - small[x][y].length + 1)]) {
+                            case 0 -> large[x][y][z] == 2;
+                            case 1 -> large[x][y][z] == 3;
+                            case 2 -> large[x][y][z] == 0;
+                            case 3 -> large[x][y][z] == 1;
+                            case 4 -> large[x][y][z] == 6;
+                            case 5 -> large[x][y][z] == 7;
+                            case 6 -> large[x][y][z] == 4;
+                            case 7 -> large[x][y][z] == 5;
+                            case 8 -> large[x][y][z] == 10;
+                            case 9 -> large[x][y][z] == 11;
+                            case 10 -> large[x][y][z] == 8;
+                            case 11 -> large[x][y][z] == 9;
+                            default -> large[x][y][z] == -1;
                         })//xy : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
                             contains.set(7, false);
-                            /*perms.get(0)[x][y][z] = switch (c2[-(x-c2.length+1)]      [z]                       [y]){
-                                case 0 -> c1[x][y][z] == 1;
-                                case 1 -> c1[x][y][z] == 0;
-                                case 2 -> c1[x][y][z] == 3;
-                                case 3 -> c1[x][y][z] == 2;
-                                case 4 -> c1[x][y][z] == 10;
-                                case 5 -> c1[x][y][z] == 9;
-                                case 6 -> c1[x][y][z] == 8;
-                                case 7 -> c1[x][y][z] == 11;
-                                case 8 -> c1[x][y][z] == 6;
-                                case 9 -> c1[x][y][z] == 5;
+                            /*perms.get(0)[x][y][z] = switch (small[-(x-small.length+1)]      [z]                       [y]){
+                                case 0 -> large[x][y][z] == 1;
+                                case 1 -> large[x][y][z] == 0;
+                                case 2 -> large[x][y][z] == 3;
+                                case 3 -> large[x][y][z] == 2;
+                                case 4 -> large[x][y][z] == 10;
+                                case 5 -> large[x][y][z] == 9;
+                                case 6 -> large[x][y][z] == 8;
+                                case 7 -> large[x][y][z] == 11;
+                                case 8 -> large[x][y][z] == 6;
+                                case 9 -> large[x][y][z] == 5;
                                 case 10-> 4;
                                 case 11-> 7;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : xyy,  yzy,  zxy,  zyz,  zzx
-                            perms.get(0)[x][y][z] = switch (c2[-(x-c2.length+1)]      [z]                       [-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 3;
-                                case 1 -> c1[x][y][z] == 0;
-                                case 2 -> c1[x][y][z] == 1;
-                                case 3 -> c1[x][y][z] == 2;
-                                case 4 -> c1[x][y][z] == 10;
-                                case 5 -> c1[x][y][z] == 9;
-                                case 6 -> c1[x][y][z] == 8;
-                                case 7 -> c1[x][y][z] == 11;
-                                case 8 -> c1[x][y][z] == 6;
-                                case 9 -> c1[x][y][z] == 7;
+                            perms.get(0)[x][y][z] = switch (small[-(x-small.length+1)]      [z]                       [-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 3;
+                                case 1 -> large[x][y][z] == 0;
+                                case 2 -> large[x][y][z] == 1;
+                                case 3 -> large[x][y][z] == 2;
+                                case 4 -> large[x][y][z] == 10;
+                                case 5 -> large[x][y][z] == 9;
+                                case 6 -> large[x][y][z] == 8;
+                                case 7 -> large[x][y][z] == 11;
+                                case 8 -> large[x][y][z] == 6;
+                                case 9 -> large[x][y][z] == 7;
                                 case 10-> 4;
                                 case 11-> 5;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //xy : xzz,  yyx
-                            perms.get(0)[x][y][z] = switch (c2[-(x-c2.length+1)]      [-(z-c2[x][y].length+1)][y]){
-                                case 0 -> c1[x][y][z] == 1;
-                                case 1 -> c1[x][y][z] == 2;
-                                case 2 -> c1[x][y][z] == 3;
-                                case 3 -> c1[x][y][z] == 0;
-                                case 4 -> c1[x][y][z] == 10;
-                                case 5 -> c1[x][y][z] == 11;
-                                case 6 -> c1[x][y][z] == 8;
-                                case 7 -> c1[x][y][z] == 9;
-                                case 8 -> c1[x][y][z] == 6;
-                                case 9 -> c1[x][y][z] == 5;
+                            perms.get(0)[x][y][z] = switch (small[-(x-small.length+1)]      [-(z-small[x][y].length+1)][y]){
+                                case 0 -> large[x][y][z] == 1;
+                                case 1 -> large[x][y][z] == 2;
+                                case 2 -> large[x][y][z] == 3;
+                                case 3 -> large[x][y][z] == 0;
+                                case 4 -> large[x][y][z] == 10;
+                                case 5 -> large[x][y][z] == 11;
+                                case 6 -> large[x][y][z] == 8;
+                                case 7 -> large[x][y][z] == 9;
+                                case 8 -> large[x][y][z] == 6;
+                                case 9 -> large[x][y][z] == 5;
                                 case 10-> 4;
                                 case 11-> 7;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xyy,  yzy,  zxy,  zyz,  zzx
-                            perms.get(0)[x][y][z] = switch (c2[-(x-c2.length+1)]      [-(z-c2[x][y].length+1)][-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 3;
-                                case 1 -> c1[x][y][z] == 2;
-                                case 2 -> c1[x][y][z] == 1;
-                                case 3 -> c1[x][y][z] == 0;
-                                case 4 -> c1[x][y][z] == 10;
-                                case 5 -> c1[x][y][z] == 11;
-                                case 6 -> c1[x][y][z] == 8;
-                                case 7 -> c1[x][y][z] == 9;
-                                case 8 -> c1[x][y][z] == 6;
-                                case 9 -> c1[x][y][z] == 7;
+                            perms.get(0)[x][y][z] = switch (small[-(x-small.length+1)]      [-(z-small[x][y].length+1)][-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 3;
+                                case 1 -> large[x][y][z] == 2;
+                                case 2 -> large[x][y][z] == 1;
+                                case 3 -> large[x][y][z] == 0;
+                                case 4 -> large[x][y][z] == 10;
+                                case 5 -> large[x][y][z] == 11;
+                                case 6 -> large[x][y][z] == 8;
+                                case 7 -> large[x][y][z] == 9;
+                                case 8 -> large[x][y][z] == 6;
+                                case 9 -> large[x][y][z] == 7;
                                 case 10-> 4;
                                 case 11-> 5;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //00 : xzz,  yyx
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [x]                       [z]){
-                                case 0 -> c1[x][y][z] == 6;
-                                case 1 -> c1[x][y][z] == 5;
-                                case 2 -> c1[x][y][z] == 4;
-                                case 3 -> c1[x][y][z] == 7;
-                                case 4 -> c1[x][y][z] == 2;
-                                case 5 -> c1[x][y][z] == 1;
-                                case 6 -> c1[x][y][z] == 0;
-                                case 7 -> c1[x][y][z] == 3;
-                                case 8 -> c1[x][y][z] == 11;
-                                case 9 -> c1[x][y][z] == 10;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [x]                       [z]){
+                                case 0 -> large[x][y][z] == 6;
+                                case 1 -> large[x][y][z] == 5;
+                                case 2 -> large[x][y][z] == 4;
+                                case 3 -> large[x][y][z] == 7;
+                                case 4 -> large[x][y][z] == 2;
+                                case 5 -> large[x][y][z] == 1;
+                                case 6 -> large[x][y][z] == 0;
+                                case 7 -> large[x][y][z] == 3;
+                                case 8 -> large[x][y][z] == 11;
+                                case 9 -> large[x][y][z] == 10;
                                 case 10-> 9;
                                 case 11-> 8;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xxz,  zyy
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [x]                       [-(z-c2[x][y].length+1)]){
-                                case 0 -> c1[x][y][z] == 6;
-                                case 1 -> c1[x][y][z] == 7;
-                                case 2 -> c1[x][y][z] == 4;
-                                case 3 -> c1[x][y][z] == 5;
-                                case 4 -> c1[x][y][z] == 2;
-                                case 5 -> c1[x][y][z] == 3;
-                                case 6 -> c1[x][y][z] == 0;
-                                case 7 -> c1[x][y][z] == 1;
-                                case 8 -> c1[x][y][z] == 11;
-                                case 9 -> c1[x][y][z] == 10;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [x]                       [-(z-small[x][y].length+1)]){
+                                case 0 -> large[x][y][z] == 6;
+                                case 1 -> large[x][y][z] == 7;
+                                case 2 -> large[x][y][z] == 4;
+                                case 3 -> large[x][y][z] == 5;
+                                case 4 -> large[x][y][z] == 2;
+                                case 5 -> large[x][y][z] == 3;
+                                case 6 -> large[x][y][z] == 0;
+                                case 7 -> large[x][y][z] == 1;
+                                case 8 -> large[x][y][z] == 11;
+                                case 9 -> large[x][y][z] == 10;
                                 case 10-> 9;
                                 case 11-> 8;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };//00 : xxz,  zyy
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [-(x-c2.length+1)]      [z]){
-                                case 0 -> c1[x][y][z] == 6;
-                                case 1 -> c1[x][y][z] == 5;
-                                case 2 -> c1[x][y][z] == 4;
-                                case 3 -> c1[x][y][z] == 7;
-                                case 4 -> c1[x][y][z] == 0;
-                                case 5 -> c1[x][y][z] == 1;
-                                case 6 -> c1[x][y][z] == 2;
-                                case 7 -> c1[x][y][z] == 3;
-                                case 8 -> c1[x][y][z] == 9;
-                                case 9 -> c1[x][y][z] == 10;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [-(x-small.length+1)]      [z]){
+                                case 0 -> large[x][y][z] == 6;
+                                case 1 -> large[x][y][z] == 5;
+                                case 2 -> large[x][y][z] == 4;
+                                case 3 -> large[x][y][z] == 7;
+                                case 4 -> large[x][y][z] == 0;
+                                case 5 -> large[x][y][z] == 1;
+                                case 6 -> large[x][y][z] == 2;
+                                case 7 -> large[x][y][z] == 3;
+                                case 8 -> large[x][y][z] == 9;
+                                case 9 -> large[x][y][z] == 10;
                                 case 10-> 11;
                                 case 11-> 8;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : zzz
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [-(x-c2.length+1)]      [-(z-c2[x][y].length+1)]){
-                                case 0 -> c1[x][y][z] == 6;
-                                case 1 -> c1[x][y][z] == 7;
-                                case 2 -> c1[x][y][z] == 4;
-                                case 3 -> c1[x][y][z] == 5;
-                                case 4 -> c1[x][y][z] == 0;
-                                case 5 -> c1[x][y][z] == 3;
-                                case 6 -> c1[x][y][z] == 2;
-                                case 7 -> c1[x][y][z] == 1;
-                                case 8 -> c1[x][y][z] == 9;
-                                case 9 -> c1[x][y][z] == 10;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [-(x-small.length+1)]      [-(z-small[x][y].length+1)]){
+                                case 0 -> large[x][y][z] == 6;
+                                case 1 -> large[x][y][z] == 7;
+                                case 2 -> large[x][y][z] == 4;
+                                case 3 -> large[x][y][z] == 5;
+                                case 4 -> large[x][y][z] == 0;
+                                case 5 -> large[x][y][z] == 3;
+                                case 6 -> large[x][y][z] == 2;
+                                case 7 -> large[x][y][z] == 1;
+                                case 8 -> large[x][y][z] == 9;
+                                case 9 -> large[x][y][z] == 10;
                                 case 10-> 11;
                                 case 11-> 8;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };//xy : zzz
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [z]                       [x]){
-                                case 0 -> c1[x][y][z] == 10;
-                                case 1 -> c1[x][y][z] == 9;
-                                case 2 -> c1[x][y][z] == 8;
-                                case 3 -> c1[x][y][z] == 11;
-                                case 4 -> c1[x][y][z] == 3;
-                                case 5 -> c1[x][y][z] == 0;
-                                case 6 -> c1[x][y][z] == 1;
-                                case 7 -> c1[x][y][z] == 2;
-                                case 8 -> c1[x][y][z] == 7;
-                                case 9 -> c1[x][y][z] == 6;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [z]                       [x]){
+                                case 0 -> large[x][y][z] == 10;
+                                case 1 -> large[x][y][z] == 9;
+                                case 2 -> large[x][y][z] == 8;
+                                case 3 -> large[x][y][z] == 11;
+                                case 4 -> large[x][y][z] == 3;
+                                case 5 -> large[x][y][z] == 0;
+                                case 6 -> large[x][y][z] == 1;
+                                case 7 -> large[x][y][z] == 2;
+                                case 8 -> large[x][y][z] == 7;
+                                case 9 -> large[x][y][z] == 6;
                                 case 10-> 5;
                                 case 11-> 4;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : xyyy, yxxz, yzyy, zxyy, zyzy, zzxy, zzyz, zzzx
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [z]                       [-(x-c2.length+1)]){
-                                case 0 -> c1[x][y][z] == 10;
-                                case 1 -> c1[x][y][z] == 9;
-                                case 2 -> c1[x][y][z] == 8;
-                                case 3 -> c1[x][y][z] == 11;
-                                case 4 -> c1[x][y][z] == 1;
-                                case 5 -> c1[x][y][z] == 0;
-                                case 6 -> c1[x][y][z] == 3;
-                                case 7 -> c1[x][y][z] == 2;
-                                case 8 -> c1[x][y][z] == 5;
-                                case 9 -> c1[x][y][z] == 6;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [z]                       [-(x-small.length+1)]){
+                                case 0 -> large[x][y][z] == 10;
+                                case 1 -> large[x][y][z] == 9;
+                                case 2 -> large[x][y][z] == 8;
+                                case 3 -> large[x][y][z] == 11;
+                                case 4 -> large[x][y][z] == 1;
+                                case 5 -> large[x][y][z] == 0;
+                                case 6 -> large[x][y][z] == 3;
+                                case 7 -> large[x][y][z] == 2;
+                                case 8 -> large[x][y][z] == 5;
+                                case 9 -> large[x][y][z] == 6;
                                 case 10-> 7;
                                 case 11-> 4;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };      //xy : xxxy, xxyz, xxzx, xyzz, xzxz, yzzz, zxzz, zyyx
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [-(z-c2[x][y].length+1)][x]){
-                                case 0 -> c1[x][y][z] == 10;
-                                case 1 -> c1[x][y][z] == 11;
-                                case 2 -> c1[x][y][z] == 8;
-                                case 3 -> c1[x][y][z] == 9;
-                                case 4 -> c1[x][y][z] == 3;
-                                case 5 -> c1[x][y][z] == 2;
-                                case 6 -> c1[x][y][z] == 1;
-                                case 7 -> c1[x][y][z] == 0;
-                                case 8 -> c1[x][y][z] == 7;
-                                case 9 -> c1[x][y][z] == 6;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [-(z-small[x][y].length+1)][x]){
+                                case 0 -> large[x][y][z] == 10;
+                                case 1 -> large[x][y][z] == 11;
+                                case 2 -> large[x][y][z] == 8;
+                                case 3 -> large[x][y][z] == 9;
+                                case 4 -> large[x][y][z] == 3;
+                                case 5 -> large[x][y][z] == 2;
+                                case 6 -> large[x][y][z] == 1;
+                                case 7 -> large[x][y][z] == 0;
+                                case 8 -> large[x][y][z] == 7;
+                                case 9 -> large[x][y][z] == 6;
                                 case 10-> 5;
                                 case 11-> 4;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xyyy, yxxz, yzyy, zxyy, zyzy, zzxy, zzyz, zzzx
-                            perms.get(0)[x][y][z] = switch (c2[y]                       [-(z-c2[x][y].length+1)][-(x-c2.length+1)]){
-                                case 0 -> c1[x][y][z] == 10;
-                                case 1 -> c1[x][y][z] == 11;
-                                case 2 -> c1[x][y][z] == 8;
-                                case 3 -> c1[x][y][z] == 9;
-                                case 4 -> c1[x][y][z] == 1;
-                                case 5 -> c1[x][y][z] == 2;
-                                case 6 -> c1[x][y][z] == 3;
-                                case 7 -> c1[x][y][z] == 0;
-                                case 8 -> c1[x][y][z] == 5;
-                                case 9 -> c1[x][y][z] == 6;
+                            perms.get(0)[x][y][z] = switch (small[y]                       [-(z-small[x][y].length+1)][-(x-small.length+1)]){
+                                case 0 -> large[x][y][z] == 10;
+                                case 1 -> large[x][y][z] == 11;
+                                case 2 -> large[x][y][z] == 8;
+                                case 3 -> large[x][y][z] == 9;
+                                case 4 -> large[x][y][z] == 1;
+                                case 5 -> large[x][y][z] == 2;
+                                case 6 -> large[x][y][z] == 3;
+                                case 7 -> large[x][y][z] == 0;
+                                case 8 -> large[x][y][z] == 5;
+                                case 9 -> large[x][y][z] == 6;
                                 case 10-> 7;
                                 case 11-> 4;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };      //00 : xxxy, xxyz, xxzx, xyzz, xzxz, yzzz, zxzz, zyyx
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [x]                       [z]){
-                                case 0 -> c1[x][y][z] == 4;
-                                case 1 -> c1[x][y][z] == 5;
-                                case 2 -> c1[x][y][z] == 6;
-                                case 3 -> c1[x][y][z] == 7;
-                                case 4 -> c1[x][y][z] == 2;
-                                case 5 -> c1[x][y][z] == 1;
-                                case 6 -> c1[x][y][z] == 0;
-                                case 7 -> c1[x][y][z] == 3;
-                                case 8 -> c1[x][y][z] == 11;
-                                case 9 -> c1[x][y][z] == 8;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [x]                       [z]){
+                                case 0 -> large[x][y][z] == 4;
+                                case 1 -> large[x][y][z] == 5;
+                                case 2 -> large[x][y][z] == 6;
+                                case 3 -> large[x][y][z] == 7;
+                                case 4 -> large[x][y][z] == 2;
+                                case 5 -> large[x][y][z] == 1;
+                                case 6 -> large[x][y][z] == 0;
+                                case 7 -> large[x][y][z] == 3;
+                                case 8 -> large[x][y][z] == 11;
+                                case 9 -> large[x][y][z] == 8;
                                 case 10-> 9;
                                 case 11-> 10;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : xzy,  z
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [x]                       [-(z-c2[x][y].length+1)]){
-                                case 0 -> c1[x][y][z] == 4;
-                                case 1 -> c1[x][y][z] == 7;
-                                case 2 -> c1[x][y][z] == 6;
-                                case 3 -> c1[x][y][z] == 5;
-                                case 4 -> c1[x][y][z] == 2;
-                                case 5 -> c1[x][y][z] == 3;
-                                case 6 -> c1[x][y][z] == 0;
-                                case 7 -> c1[x][y][z] == 1;
-                                case 8 -> c1[x][y][z] == 11;
-                                case 9 -> c1[x][y][z] == 8;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [x]                       [-(z-small[x][y].length+1)]){
+                                case 0 -> large[x][y][z] == 4;
+                                case 1 -> large[x][y][z] == 7;
+                                case 2 -> large[x][y][z] == 6;
+                                case 3 -> large[x][y][z] == 5;
+                                case 4 -> large[x][y][z] == 2;
+                                case 5 -> large[x][y][z] == 3;
+                                case 6 -> large[x][y][z] == 0;
+                                case 7 -> large[x][y][z] == 1;
+                                case 8 -> large[x][y][z] == 11;
+                                case 9 -> large[x][y][z] == 8;
                                 case 10-> 9;
                                 case 11-> 10;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };//xy : xzy,  z
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [-(x-c2.length+1)]      [z]){
-                                case 0 -> c1[x][y][z] == 4;
-                                case 1 -> c1[x][y][z] == 5;
-                                case 2 -> c1[x][y][z] == 6;
-                                case 3 -> c1[x][y][z] == 7;
-                                case 4 -> c1[x][y][z] == 0;
-                                case 5 -> c1[x][y][z] == 1;
-                                case 6 -> c1[x][y][z] == 2;
-                                case 7 -> c1[x][y][z] == 3;
-                                case 8 -> c1[x][y][z] == 9;
-                                case 9 -> c1[x][y][z] == 8;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [-(x-small.length+1)]      [z]){
+                                case 0 -> large[x][y][z] == 4;
+                                case 1 -> large[x][y][z] == 5;
+                                case 2 -> large[x][y][z] == 6;
+                                case 3 -> large[x][y][z] == 7;
+                                case 4 -> large[x][y][z] == 0;
+                                case 5 -> large[x][y][z] == 1;
+                                case 6 -> large[x][y][z] == 2;
+                                case 7 -> large[x][y][z] == 3;
+                                case 8 -> large[x][y][z] == 9;
+                                case 9 -> large[x][y][z] == 8;
                                 case 10-> 11;
                                 case 11-> 10;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xyx,  yxy,  yyz,  yzx,  zxx
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [-(x-c2.length+1)]      [-(z-c2[x][y].length+1)]){
-                                case 0 -> c1[x][y][z] == 4;
-                                case 1 -> c1[x][y][z] == 7;
-                                case 2 -> c1[x][y][z] == 6;
-                                case 3 -> c1[x][y][z] == 5;
-                                case 4 -> c1[x][y][z] == 0;
-                                case 5 -> c1[x][y][z] == 3;
-                                case 6 -> c1[x][y][z] == 2;
-                                case 7 -> c1[x][y][z] == 1;
-                                case 8 -> c1[x][y][z] == 9;
-                                case 9 -> c1[x][y][z] == 8;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [-(x-small.length+1)]      [-(z-small[x][y].length+1)]){
+                                case 0 -> large[x][y][z] == 4;
+                                case 1 -> large[x][y][z] == 7;
+                                case 2 -> large[x][y][z] == 6;
+                                case 3 -> large[x][y][z] == 5;
+                                case 4 -> large[x][y][z] == 0;
+                                case 5 -> large[x][y][z] == 3;
+                                case 6 -> large[x][y][z] == 2;
+                                case 7 -> large[x][y][z] == 1;
+                                case 8 -> large[x][y][z] == 9;
+                                case 9 -> large[x][y][z] == 8;
                                 case 10-> 11;
                                 case 11-> 10;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };//00 : xyx,  yxy,  yyz,  yzx,  zxx
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [z]                       [x]){
-                                case 0 -> c1[x][y][z] == 8;
-                                case 1 -> c1[x][y][z] == 9;
-                                case 2 -> c1[x][y][z] == 10;
-                                case 3 -> c1[x][y][z] == 11;
-                                case 4 -> c1[x][y][z] == 3;
-                                case 5 -> c1[x][y][z] == 0;
-                                case 6 -> c1[x][y][z] == 1;
-                                case 7 -> c1[x][y][z] == 2;
-                                case 8 -> c1[x][y][z] == 7;
-                                case 9 -> c1[x][y][z] == 4;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [z]                       [x]){
+                                case 0 -> large[x][y][z] == 8;
+                                case 1 -> large[x][y][z] == 9;
+                                case 2 -> large[x][y][z] == 10;
+                                case 3 -> large[x][y][z] == 11;
+                                case 4 -> large[x][y][z] == 3;
+                                case 5 -> large[x][y][z] == 0;
+                                case 6 -> large[x][y][z] == 1;
+                                case 7 -> large[x][y][z] == 2;
+                                case 8 -> large[x][y][z] == 7;
+                                case 9 -> large[x][y][z] == 4;
                                 case 10-> 5;
                                 case 11-> 6;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xyxx, xzzy, yxyx, yyxy, yyyz, yyzx, yzxx, zxxx
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [z]                       [-(x-c2.length+1)]){
-                                case 0 -> c1[x][y][z] == 8;
-                                case 1 -> c1[x][y][z] == 9;
-                                case 2 -> c1[x][y][z] == 10;
-                                case 3 -> c1[x][y][z] == 11;
-                                case 4 -> c1[x][y][z] == 1;
-                                case 5 -> c1[x][y][z] == 0;
-                                case 6 -> c1[x][y][z] == 3;
-                                case 7 -> c1[x][y][z] == 2;
-                                case 8 -> c1[x][y][z] == 5;
-                                case 9 -> c1[x][y][z] == 4;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [z]                       [-(x-small.length+1)]){
+                                case 0 -> large[x][y][z] == 8;
+                                case 1 -> large[x][y][z] == 9;
+                                case 2 -> large[x][y][z] == 10;
+                                case 3 -> large[x][y][z] == 11;
+                                case 4 -> large[x][y][z] == 1;
+                                case 5 -> large[x][y][z] == 0;
+                                case 6 -> large[x][y][z] == 3;
+                                case 7 -> large[x][y][z] == 2;
+                                case 8 -> large[x][y][z] == 5;
+                                case 9 -> large[x][y][z] == 4;
                                 case 10-> 7;
                                 case 11-> 6;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };      //00 : xy,   xzyx, yxzy, yz,   zx,   zyxz
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [-(z-c2[x][y].length+1)][x]){
-                                case 0 -> c1[x][y][z] == 8;
-                                case 1 -> c1[x][y][z] == 11;
-                                case 2 -> c1[x][y][z] == 10;
-                                case 3 -> c1[x][y][z] == 9;
-                                case 4 -> c1[x][y][z] == 3;
-                                case 5 -> c1[x][y][z] == 2;
-                                case 6 -> c1[x][y][z] == 1;
-                                case 7 -> c1[x][y][z] == 0;
-                                case 8 -> c1[x][y][z] == 7;
-                                case 9 -> c1[x][y][z] == 4;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [-(z-small[x][y].length+1)][x]){
+                                case 0 -> large[x][y][z] == 8;
+                                case 1 -> large[x][y][z] == 11;
+                                case 2 -> large[x][y][z] == 10;
+                                case 3 -> large[x][y][z] == 9;
+                                case 4 -> large[x][y][z] == 3;
+                                case 5 -> large[x][y][z] == 2;
+                                case 6 -> large[x][y][z] == 1;
+                                case 7 -> large[x][y][z] == 0;
+                                case 8 -> large[x][y][z] == 7;
+                                case 9 -> large[x][y][z] == 4;
                                 case 10-> 5;
                                 case 11-> 6;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : xyxx, xzzy, yxyx, yyxy, yyyz, yyzx, yzxx, zxxx
-                            perms.get(0)[x][y][z] = switch (c2[-(y-c2[x].length+1)]   [-(z-c2[x][y].length+1)][-(x-c2.length+1)]){
-                                case 0 -> c1[x][y][z] == 8;
-                                case 1 -> c1[x][y][z] == 11;
-                                case 2 -> c1[x][y][z] == 10;
-                                case 3 -> c1[x][y][z] == 9;
-                                case 4 -> c1[x][y][z] == 1;
-                                case 5 -> c1[x][y][z] == 2;
-                                case 6 -> c1[x][y][z] == 3;
-                                case 7 -> c1[x][y][z] == 0;
-                                case 8 -> c1[x][y][z] == 5;
-                                case 9 -> c1[x][y][z] == 4;
+                            perms.get(0)[x][y][z] = switch (small[-(y-small[x].length+1)]   [-(z-small[x][y].length+1)][-(x-small.length+1)]){
+                                case 0 -> large[x][y][z] == 8;
+                                case 1 -> large[x][y][z] == 11;
+                                case 2 -> large[x][y][z] == 10;
+                                case 3 -> large[x][y][z] == 9;
+                                case 4 -> large[x][y][z] == 1;
+                                case 5 -> large[x][y][z] == 2;
+                                case 6 -> large[x][y][z] == 3;
+                                case 7 -> large[x][y][z] == 0;
+                                case 8 -> large[x][y][z] == 5;
+                                case 9 -> large[x][y][z] == 4;
                                 case 10-> 7;
                                 case 11-> 6;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };      //xy : xy,   xzyx, yxzy, yz,   zx,   zyxz
-                            perms.get(0)[x][y][z] = switch (c2[z]                       [x]                       [y]){
-                                case 0 -> c1[x][y][z] == 5;
-                                case 1 -> c1[x][y][z] == 6;
-                                case 2 -> c1[x][y][z] == 7;
-                                case 3 -> c1[x][y][z] == 4;
-                                case 4 -> c1[x][y][z] == 11;
-                                case 5 -> c1[x][y][z] == 10;
-                                case 6 -> c1[x][y][z] == 9;
-                                case 7 -> c1[x][y][z] == 8;
-                                case 8 -> c1[x][y][z] == 2;
-                                case 9 -> c1[x][y][z] == 1;
+                            perms.get(0)[x][y][z] = switch (small[z]                       [x]                       [y]){
+                                case 0 -> large[x][y][z] == 5;
+                                case 1 -> large[x][y][z] == 6;
+                                case 2 -> large[x][y][z] == 7;
+                                case 3 -> large[x][y][z] == 4;
+                                case 4 -> large[x][y][z] == 11;
+                                case 5 -> large[x][y][z] == 10;
+                                case 6 -> large[x][y][z] == 9;
+                                case 7 -> large[x][y][z] == 8;
+                                case 8 -> large[x][y][z] == 2;
+                                case 9 -> large[x][y][z] == 1;
                                 case 10-> 0;
                                 case 11-> 3;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : xxxz, xzyy, yxxx, zy,   zzyx
-                            perms.get(0)[x][y][z] = switch (c2[z]                       [x]                       [-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 7;
-                                case 1 -> c1[x][y][z] == 6;
-                                case 2 -> c1[x][y][z] == 5;
-                                case 3 -> c1[x][y][z] == 4;
-                                case 4 -> c1[x][y][z] == 11;
-                                case 5 -> c1[x][y][z] == 10;
-                                case 6 -> c1[x][y][z] == 9;
-                                case 7 -> c1[x][y][z] == 8;
-                                case 8 -> c1[x][y][z] == 2;
-                                case 9 -> c1[x][y][z] == 3;
+                            perms.get(0)[x][y][z] = switch (small[z]                       [x]                       [-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 7;
+                                case 1 -> large[x][y][z] == 6;
+                                case 2 -> large[x][y][z] == 5;
+                                case 3 -> large[x][y][z] == 4;
+                                case 4 -> large[x][y][z] == 11;
+                                case 5 -> large[x][y][z] == 10;
+                                case 6 -> large[x][y][z] == 9;
+                                case 7 -> large[x][y][z] == 8;
+                                case 8 -> large[x][y][z] == 2;
+                                case 9 -> large[x][y][z] == 3;
                                 case 10-> 0;
                                 case 11-> 1;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //xy : xxzy, xz,   yxzz, yyyx, zyyy
-                            perms.get(0)[x][y][z] = switch (c2[z]                       [-(x-c2.length+1)]      [y]){
-                                case 0 -> c1[x][y][z] == 5;
-                                case 1 -> c1[x][y][z] == 6;
-                                case 2 -> c1[x][y][z] == 7;
-                                case 3 -> c1[x][y][z] == 4;
-                                case 4 -> c1[x][y][z] == 9;
-                                case 5 -> c1[x][y][z] == 10;
-                                case 6 -> c1[x][y][z] == 11;
-                                case 7 -> c1[x][y][z] == 8;
-                                case 8 -> c1[x][y][z] == 0;
-                                case 9 -> c1[x][y][z] == 1;
+                            perms.get(0)[x][y][z] = switch (small[z]                       [-(x-small.length+1)]      [y]){
+                                case 0 -> large[x][y][z] == 5;
+                                case 1 -> large[x][y][z] == 6;
+                                case 2 -> large[x][y][z] == 7;
+                                case 3 -> large[x][y][z] == 4;
+                                case 4 -> large[x][y][z] == 9;
+                                case 5 -> large[x][y][z] == 10;
+                                case 6 -> large[x][y][z] == 11;
+                                case 7 -> large[x][y][z] == 8;
+                                case 8 -> large[x][y][z] == 0;
+                                case 9 -> large[x][y][z] == 1;
                                 case 10-> 2;
                                 case 11-> 3;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xxyx, xyxy, xyyz, xyzx, xzxx, yxyy, yyzy, yzxy, yzyz, yzzx, zxxy, zxyz, zxzx, zyzz, zzxz
-                            perms.get(0)[x][y][z] = switch (c2[z]                       [-(x-c2.length+1)]      [-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 7;
-                                case 1 -> c1[x][y][z] == 6;
-                                case 2 -> c1[x][y][z] == 5;
-                                case 3 -> c1[x][y][z] == 4;
-                                case 4 -> c1[x][y][z] == 9;
-                                case 5 -> c1[x][y][z] == 10;
-                                case 6 -> c1[x][y][z] == 11;
-                                case 7 -> c1[x][y][z] == 8;
-                                case 8 -> c1[x][y][z] == 0;
-                                case 9 -> c1[x][y][z] == 3;
+                            perms.get(0)[x][y][z] = switch (small[z]                       [-(x-small.length+1)]      [-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 7;
+                                case 1 -> large[x][y][z] == 6;
+                                case 2 -> large[x][y][z] == 5;
+                                case 3 -> large[x][y][z] == 4;
+                                case 4 -> large[x][y][z] == 9;
+                                case 5 -> large[x][y][z] == 10;
+                                case 6 -> large[x][y][z] == 11;
+                                case 7 -> large[x][y][z] == 8;
+                                case 8 -> large[x][y][z] == 0;
+                                case 9 -> large[x][y][z] == 3;
                                 case 10-> 2;
                                 case 11-> 1;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //00 : xzzz, yx,   yyxz, zyxx, zzzy*/
-                        if (!switch (c2[z]                           [y]                           [x]) {
-                            case 0 -> c1[x][y][z] == 9;
-                            case 1 -> c1[x][y][z] == 10;
-                            case 2 -> c1[x][y][z] == 11;
-                            case 3 -> c1[x][y][z] == 8;
-                            case 4 -> c1[x][y][z] == 7;
-                            case 5 -> c1[x][y][z] == 6;
-                            case 6 -> c1[x][y][z] == 5;
-                            case 7 -> c1[x][y][z] == 4;
-                            case 8 -> c1[x][y][z] == 3;
-                            case 9 -> c1[x][y][z] == 0;
-                            case 10 -> c1[x][y][z] == 1;
-                            case 11 -> c1[x][y][z] == 2;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[z]                           [y]                           [x]) {
+                            case 0 -> large[x][y][z] == 9;
+                            case 1 -> large[x][y][z] == 10;
+                            case 2 -> large[x][y][z] == 11;
+                            case 3 -> large[x][y][z] == 8;
+                            case 4 -> large[x][y][z] == 7;
+                            case 5 -> large[x][y][z] == 6;
+                            case 6 -> large[x][y][z] == 5;
+                            case 7 -> large[x][y][z] == 4;
+                            case 8 -> large[x][y][z] == 3;
+                            case 9 -> large[x][y][z] == 0;
+                            case 10 -> large[x][y][z] == 1;
+                            case 11 -> large[x][y][z] == 2;
+                            default -> large[x][y][z] == -1;
                         })                           //xy : yyy
                             contains.set(8, false);
-                        if (!switch (c2[z]                           [y]                           [-(x - c2.length + 1)]) {
-                            case 0 -> c1[x][y][z] == 9;
-                            case 1 -> c1[x][y][z] == 10;
-                            case 2 -> c1[x][y][z] == 11;
-                            case 3 -> c1[x][y][z] == 8;
-                            case 4 -> c1[x][y][z] == 5;
-                            case 5 -> c1[x][y][z] == 6;
-                            case 6 -> c1[x][y][z] == 7;
-                            case 7 -> c1[x][y][z] == 4;
-                            case 8 -> c1[x][y][z] == 1;
-                            case 9 -> c1[x][y][z] == 0;
-                            case 10 -> c1[x][y][z] == 3;
-                            case 11 -> c1[x][y][z] == 2;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[z]                           [y]                           [-(x - small.length + 1)]) {
+                            case 0 -> large[x][y][z] == 9;
+                            case 1 -> large[x][y][z] == 10;
+                            case 2 -> large[x][y][z] == 11;
+                            case 3 -> large[x][y][z] == 8;
+                            case 4 -> large[x][y][z] == 5;
+                            case 5 -> large[x][y][z] == 6;
+                            case 6 -> large[x][y][z] == 7;
+                            case 7 -> large[x][y][z] == 4;
+                            case 8 -> large[x][y][z] == 1;
+                            case 9 -> large[x][y][z] == 0;
+                            case 10 -> large[x][y][z] == 3;
+                            case 11 -> large[x][y][z] == 2;
+                            default -> large[x][y][z] == -1;
                         })      //00 : y,    zyx
                             contains.set(9, false);
-                        if (!switch (c2[z]                           [-(y - c2[x].length + 1)]   [x]) {
-                            case 0 -> c1[x][y][z] == 11;
-                            case 1 -> c1[x][y][z] == 10;
-                            case 2 -> c1[x][y][z] == 9;
-                            case 3 -> c1[x][y][z] == 8;
-                            case 4 -> c1[x][y][z] == 7;
-                            case 5 -> c1[x][y][z] == 6;
-                            case 6 -> c1[x][y][z] == 5;
-                            case 7 -> c1[x][y][z] == 4;
-                            case 8 -> c1[x][y][z] == 3;
-                            case 9 -> c1[x][y][z] == 2;
-                            case 10 -> c1[x][y][z] == 1;
-                            case 11 -> c1[x][y][z] == 0;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[z]                           [-(y - small[x].length + 1)]   [x]) {
+                            case 0 -> large[x][y][z] == 11;
+                            case 1 -> large[x][y][z] == 10;
+                            case 2 -> large[x][y][z] == 9;
+                            case 3 -> large[x][y][z] == 8;
+                            case 4 -> large[x][y][z] == 7;
+                            case 5 -> large[x][y][z] == 6;
+                            case 6 -> large[x][y][z] == 5;
+                            case 7 -> large[x][y][z] == 4;
+                            case 8 -> large[x][y][z] == 3;
+                            case 9 -> large[x][y][z] == 2;
+                            case 10 -> large[x][y][z] == 1;
+                            case 11 -> large[x][y][z] == 0;
+                            default -> large[x][y][z] == -1;
                         })                           //00 : yxx,  zzy
                             contains.set(10, false);
-                        if (!switch (c2[z]                           [-(y - c2[x].length + 1)]   [-(x - c2.length + 1)]) {
-                            case 0 -> c1[x][y][z] == 11;
-                            case 1 -> c1[x][y][z] == 10;
-                            case 2 -> c1[x][y][z] == 9;
-                            case 3 -> c1[x][y][z] == 8;
-                            case 4 -> c1[x][y][z] == 5;
-                            case 5 -> c1[x][y][z] == 6;
-                            case 6 -> c1[x][y][z] == 7;
-                            case 7 -> c1[x][y][z] == 4;
-                            case 8 -> c1[x][y][z] == 1;
-                            case 9 -> c1[x][y][z] == 2;
-                            case 10 -> c1[x][y][z] == 3;
-                            case 11 -> c1[x][y][z] == 0;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[z]                           [-(y - small[x].length + 1)]   [-(x - small.length + 1)]) {
+                            case 0 -> large[x][y][z] == 11;
+                            case 1 -> large[x][y][z] == 10;
+                            case 2 -> large[x][y][z] == 9;
+                            case 3 -> large[x][y][z] == 8;
+                            case 4 -> large[x][y][z] == 5;
+                            case 5 -> large[x][y][z] == 6;
+                            case 6 -> large[x][y][z] == 7;
+                            case 7 -> large[x][y][z] == 4;
+                            case 8 -> large[x][y][z] == 1;
+                            case 9 -> large[x][y][z] == 2;
+                            case 10 -> large[x][y][z] == 3;
+                            case 11 -> large[x][y][z] == 0;
+                            default -> large[x][y][z] == -1;
                         })      //xy : xxy,  xyz,  xzx,  yzz,  zxz
                             contains.set(11, false);
-                            /*perms.get(0)[x][y][z] = switch (c2[-(z-c2[x][y].length+1)][x]                       [y]){
-                                case 0 -> c1[x][y][z] == 5;
-                                case 1 -> c1[x][y][z] == 4;
-                                case 2 -> c1[x][y][z] == 7;
-                                case 3 -> c1[x][y][z] == 6;
-                                case 4 -> c1[x][y][z] == 11;
-                                case 5 -> c1[x][y][z] == 8;
-                                case 6 -> c1[x][y][z] == 9;
-                                case 7 -> c1[x][y][z] == 10;
-                                case 8 -> c1[x][y][z] == 2;
-                                case 9 -> c1[x][y][z] == 1;
+                            /*perms.get(0)[x][y][z] = switch (small[-(z-small[x][y].length+1)][x]                       [y]){
+                                case 0 -> large[x][y][z] == 5;
+                                case 1 -> large[x][y][z] == 4;
+                                case 2 -> large[x][y][z] == 7;
+                                case 3 -> large[x][y][z] == 6;
+                                case 4 -> large[x][y][z] == 11;
+                                case 5 -> large[x][y][z] == 8;
+                                case 6 -> large[x][y][z] == 9;
+                                case 7 -> large[x][y][z] == 10;
+                                case 8 -> large[x][y][z] == 2;
+                                case 9 -> large[x][y][z] == 1;
                                 case 10-> 0;
                                 case 11-> 3;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //xy : xxxz, xzyy, yxxx, zy,   zzyx
-                            perms.get(0)[x][y][z] = switch (c2[-(z-c2[x][y].length+1)][x]                       [-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 7;
-                                case 1 -> c1[x][y][z] == 4;
-                                case 2 -> c1[x][y][z] == 5;
-                                case 3 -> c1[x][y][z] == 6;
-                                case 4 -> c1[x][y][z] == 11;
-                                case 5 -> c1[x][y][z] == 8;
-                                case 6 -> c1[x][y][z] == 9;
-                                case 7 -> c1[x][y][z] == 10;
-                                case 8 -> c1[x][y][z] == 2;
-                                case 9 -> c1[x][y][z] == 3;
+                            perms.get(0)[x][y][z] = switch (small[-(z-small[x][y].length+1)][x]                       [-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 7;
+                                case 1 -> large[x][y][z] == 4;
+                                case 2 -> large[x][y][z] == 5;
+                                case 3 -> large[x][y][z] == 6;
+                                case 4 -> large[x][y][z] == 11;
+                                case 5 -> large[x][y][z] == 8;
+                                case 6 -> large[x][y][z] == 9;
+                                case 7 -> large[x][y][z] == 10;
+                                case 8 -> large[x][y][z] == 2;
+                                case 9 -> large[x][y][z] == 3;
                                 case 10-> 0;
                                 case 11-> 1;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //00 : xxzy, xz,   yxzz, yyyx, zyyy
-                            perms.get(0)[x][y][z] = switch (c2[-(z-c2[x][y].length+1)][-(x-c2.length+1)]      [-(y-c2[x].length+1)]){
-                                case 0 -> c1[x][y][z] == 7;
-                                case 1 -> c1[x][y][z] == 4;
-                                case 2 -> c1[x][y][z] == 5;
-                                case 3 -> c1[x][y][z] == 6;
-                                case 4 -> c1[x][y][z] == 9;
-                                case 5 -> c1[x][y][z] == 8;
-                                case 6 -> c1[x][y][z] == 11;
-                                case 7 -> c1[x][y][z] == 10;
-                                case 8 -> c1[x][y][z] == 0;
-                                case 9 -> c1[x][y][z] == 3;
+                            perms.get(0)[x][y][z] = switch (small[-(z-small[x][y].length+1)][-(x-small.length+1)]      [-(y-small[x].length+1)]){
+                                case 0 -> large[x][y][z] == 7;
+                                case 1 -> large[x][y][z] == 4;
+                                case 2 -> large[x][y][z] == 5;
+                                case 3 -> large[x][y][z] == 6;
+                                case 4 -> large[x][y][z] == 9;
+                                case 5 -> large[x][y][z] == 8;
+                                case 6 -> large[x][y][z] == 11;
+                                case 7 -> large[x][y][z] == 10;
+                                case 8 -> large[x][y][z] == 0;
+                                case 9 -> large[x][y][z] == 3;
                                 case 10-> 2;
                                 case 11-> 1;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };   //xy : xzzz, yx,   yyxz, zyxx, zzzy
-                            perms.get(0)[x][y][z] = switch (c2[-(z-c2[x][y].length+1)][-(x-c2.length+1)]      [y]){
-                                case 0 -> c1[x][y][z] == 5;
-                                case 1 -> c1[x][y][z] == 4;
-                                case 2 -> c1[x][y][z] == 7;
-                                case 3 -> c1[x][y][z] == 6;
-                                case 4 -> c1[x][y][z] == 9;
-                                case 5 -> c1[x][y][z] == 8;
-                                case 6 -> c1[x][y][z] == 11;
-                                case 7 -> c1[x][y][z] == 10;
-                                case 8 -> c1[x][y][z] == 0;
-                                case 9 -> c1[x][y][z] == 1;
+                            perms.get(0)[x][y][z] = switch (small[-(z-small[x][y].length+1)][-(x-small.length+1)]      [y]){
+                                case 0 -> large[x][y][z] == 5;
+                                case 1 -> large[x][y][z] == 4;
+                                case 2 -> large[x][y][z] == 7;
+                                case 3 -> large[x][y][z] == 6;
+                                case 4 -> large[x][y][z] == 9;
+                                case 5 -> large[x][y][z] == 8;
+                                case 6 -> large[x][y][z] == 11;
+                                case 7 -> large[x][y][z] == 10;
+                                case 8 -> large[x][y][z] == 0;
+                                case 9 -> large[x][y][z] == 1;
                                 case 10-> 2;
                                 case 11-> 3;
-                                default -> c1[x][y][z] == -1;
+                                default -> large[x][y][z] == -1;
                             };                       //00 : xxyx, xyxy, xyyz, xyzx, xzxx, yxyy, yyzy, yzxy, yzyz, yzzx, zxxy, zxyz, zxzx, zyzz, zzxz*/
-                        if (!switch (c2[-(z - c2[x][y].length + 1)][y]                           [x]) {
-                            case 0 -> c1[x][y][z] == 9;
-                            case 1 -> c1[x][y][z] == 8;
-                            case 2 -> c1[x][y][z] == 11;
-                            case 3 -> c1[x][y][z] == 10;
-                            case 4 -> c1[x][y][z] == 7;
-                            case 5 -> c1[x][y][z] == 4;
-                            case 6 -> c1[x][y][z] == 5;
-                            case 7 -> c1[x][y][z] == 6;
-                            case 8 -> c1[x][y][z] == 3;
-                            case 9 -> c1[x][y][z] == 0;
-                            case 10 -> c1[x][y][z] == 1;
-                            case 11 -> c1[x][y][z] == 2;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(z - small[x][y].length + 1)][y]                           [x]) {
+                            case 0 -> large[x][y][z] == 9;
+                            case 1 -> large[x][y][z] == 8;
+                            case 2 -> large[x][y][z] == 11;
+                            case 3 -> large[x][y][z] == 10;
+                            case 4 -> large[x][y][z] == 7;
+                            case 5 -> large[x][y][z] == 4;
+                            case 6 -> large[x][y][z] == 5;
+                            case 7 -> large[x][y][z] == 6;
+                            case 8 -> large[x][y][z] == 3;
+                            case 9 -> large[x][y][z] == 0;
+                            case 10 -> large[x][y][z] == 1;
+                            case 11 -> large[x][y][z] == 2;
+                            default -> large[x][y][z] == -1;
                         })                           //00 : yyy
                             contains.set(12, false);
-                        if (!switch (c2[-(z - c2[x][y].length + 1)][y]                           [-(x - c2.length + 1)]) {
-                            case 0 -> c1[x][y][z] == 9;
-                            case 1 -> c1[x][y][z] == 8;
-                            case 2 -> c1[x][y][z] == 11;
-                            case 3 -> c1[x][y][z] == 10;
-                            case 4 -> c1[x][y][z] == 5;
-                            case 5 -> c1[x][y][z] == 4;
-                            case 6 -> c1[x][y][z] == 7;
-                            case 7 -> c1[x][y][z] == 6;
-                            case 8 -> c1[x][y][z] == 1;
-                            case 9 -> c1[x][y][z] == 0;
-                            case 10 -> c1[x][y][z] == 3;
-                            case 11 -> c1[x][y][z] == 2;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(z - small[x][y].length + 1)][y]                           [-(x - small.length + 1)]) {
+                            case 0 -> large[x][y][z] == 9;
+                            case 1 -> large[x][y][z] == 8;
+                            case 2 -> large[x][y][z] == 11;
+                            case 3 -> large[x][y][z] == 10;
+                            case 4 -> large[x][y][z] == 5;
+                            case 5 -> large[x][y][z] == 4;
+                            case 6 -> large[x][y][z] == 7;
+                            case 7 -> large[x][y][z] == 6;
+                            case 8 -> large[x][y][z] == 1;
+                            case 9 -> large[x][y][z] == 0;
+                            case 10 -> large[x][y][z] == 3;
+                            case 11 -> large[x][y][z] == 2;
+                            default -> large[x][y][z] == -1;
                         })      //xy : y,    zyx
                             contains.set(13, false);
-                        if (!switch (c2[-(z - c2[x][y].length + 1)][-(y - c2[x].length + 1)]   [x]) {
-                            case 0 -> c1[x][y][z] == 11;
-                            case 1 -> c1[x][y][z] == 8;
-                            case 2 -> c1[x][y][z] == 9;
-                            case 3 -> c1[x][y][z] == 10;
-                            case 4 -> c1[x][y][z] == 7;
-                            case 5 -> c1[x][y][z] == 4;
-                            case 6 -> c1[x][y][z] == 5;
-                            case 7 -> c1[x][y][z] == 6;
-                            case 8 -> c1[x][y][z] == 3;
-                            case 9 -> c1[x][y][z] == 2;
-                            case 10 -> c1[x][y][z] == 1;
-                            case 11 -> c1[x][y][z] == 0;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(z - small[x][y].length + 1)][-(y - small[x].length + 1)]   [x]) {
+                            case 0 -> large[x][y][z] == 11;
+                            case 1 -> large[x][y][z] == 8;
+                            case 2 -> large[x][y][z] == 9;
+                            case 3 -> large[x][y][z] == 10;
+                            case 4 -> large[x][y][z] == 7;
+                            case 5 -> large[x][y][z] == 4;
+                            case 6 -> large[x][y][z] == 5;
+                            case 7 -> large[x][y][z] == 6;
+                            case 8 -> large[x][y][z] == 3;
+                            case 9 -> large[x][y][z] == 2;
+                            case 10 -> large[x][y][z] == 1;
+                            case 11 -> large[x][y][z] == 0;
+                            default -> large[x][y][z] == -1;
                         })                           //xy : yxx,  zzy
                             contains.set(14, false);
-                        if (!switch (c2[-(z - c2[x][y].length + 1)][-(y - c2[x].length + 1)]   [-(x - c2.length + 1)]) {
-                            case 0 -> c1[x][y][z] == 11;
-                            case 1 -> c1[x][y][z] == 8;
-                            case 2 -> c1[x][y][z] == 9;
-                            case 3 -> c1[x][y][z] == 10;
-                            case 4 -> c1[x][y][z] == 5;
-                            case 5 -> c1[x][y][z] == 4;
-                            case 6 -> c1[x][y][z] == 7;
-                            case 7 -> c1[x][y][z] == 6;
-                            case 8 -> c1[x][y][z] == 1;
-                            case 9 -> c1[x][y][z] == 2;
-                            case 10 -> c1[x][y][z] == 3;
-                            case 11 -> c1[x][y][z] == 0;
-                            default -> c1[x][y][z] == -1;
+                        if (!switch (small[-(z - small[x][y].length + 1)][-(y - small[x].length + 1)]   [-(x - small.length + 1)]) {
+                            case 0 -> large[x][y][z] == 11;
+                            case 1 -> large[x][y][z] == 8;
+                            case 2 -> large[x][y][z] == 9;
+                            case 3 -> large[x][y][z] == 10;
+                            case 4 -> large[x][y][z] == 5;
+                            case 5 -> large[x][y][z] == 4;
+                            case 6 -> large[x][y][z] == 7;
+                            case 7 -> large[x][y][z] == 6;
+                            case 8 -> large[x][y][z] == 1;
+                            case 9 -> large[x][y][z] == 2;
+                            case 10 -> large[x][y][z] == 3;
+                            case 11 -> large[x][y][z] == 0;
+                            default -> large[x][y][z] == -1;
                         })      //00 : xxy,  xyz,  xzx,  yzz,  zxz
                             contains.set(15, false);
                         contained = contains.contains(true);
                     }
                 }
         return new boolean[]{contained,empty};
+    }
+
+    public void addDead(ArrayList<T> cube)
+    {
+        boolean added = false;
+        boolean contains = false;
+        boolean contained = false;
+        if(deadT.size() == 0 && cube.size()>0)
+        {
+            deadT.add(cube);
+        }
+        else if(cube.size()>0)
+        {
+            for (int d = 0; d < deadT.size(); d++)
+            {
+                contains = contains(deadT.get(d),cube);
+                if (contains)
+                {
+                    contained = true;
+                    if (!added)
+                    {
+                        deadT.set(d, cube);
+                        dead++;
+                        added = true;
+                    }
+                    else
+                    {
+                        deadT.remove(d);
+                        d--;
+                    }
+                }
+            }
+            if(!contains)
+            {
+                deadT.add(cube);
+                dead++;
+            }
+        }
+    }
+    public boolean deadContains(ArrayList<T> cube)
+    {
+        boolean contained = false;
+        for (ArrayList<T> d : deadT)
+        {
+            contained = contains(cube,d);
+            if(contained)
+            {
+                kill++;
+                break;
+            }
+        }
+        /*if(!contained)
+        {
+            for (int[][][] s : knownSolutions)
+            {
+                contained = contains(cube,s)[0];
+                if(contained)
+                {
+                    kill++;
+                    System.out.println("Known");
+                    break;
+                }
+            }
+        }*/
+        return contained;
+    }
+    public boolean contains(ArrayList<T> large,ArrayList<T> small)
+    {
+        if(small.size() > large.size())
+            return false;
+        for(int i = 0; i<= ROTATIONS;i++)
+        {
+            boolean contains = true;
+            for (T t : small)
+            {
+                if (!large.contains(t.rotate(i)))
+                {
+                    contains = false;
+                    break;
+                }
+            }
+            if(contains)
+            {
+                /*System.out.println("TC: " + i);
+                System.out.println(large);
+                System.out.println(small);*/
+                return true;
+            }
+        }
+        return false;
     }
 }
