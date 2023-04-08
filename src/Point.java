@@ -30,16 +30,16 @@ public record Point(int x, int y, int z) implements Comparable
         if(HEIGHT == WIDTH)
         {
             return switch (rot) {
-                case 1 -> new Point(x, y, DEPTH - z);//xy : 00
-                case 2 -> new Point(x, HEIGHT - y, z);       //xy : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
-                case 3 -> new Point(x, HEIGHT - y, DEPTH - z);//00 : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
-                case 4 -> new Point(x, z, y);       //xy : xxx
-                case 5 -> new Point(x, z, HEIGHT - y);//00 : x,    yxz
-                case 6 -> new Point(x, DEPTH - z, y);       //00 : xxx
-                case 7 -> new Point(x, DEPTH - z, HEIGHT - y);//xy : x,    yxz
-                case 8 -> new Point(WIDTH - x, y, z);       //xy : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
-                case 9 -> new Point(WIDTH - x, y, DEPTH - z);//00 : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
-                case 10-> new Point(WIDTH - x, HEIGHT - y, z);       //00 : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
+                case 1 -> new Point(x, y, DEPTH - z);                   //xy : 00
+                case 2 -> new Point(x, HEIGHT - y, z);                  //xy : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
+                case 3 -> new Point(x, HEIGHT - y, DEPTH - z);          //00 : xx,   xyxz, yxxy, yxyz, yxzx, yyzz, yzxz, zxxz, zzyy
+                case 4 -> new Point(x, z, y);                           //xy : xxx
+                case 5 -> new Point(x, z, HEIGHT - y);                  //00 : x,    yxz
+                case 6 -> new Point(x, DEPTH - z, y);                   //00 : xxx
+                case 7 -> new Point(x, DEPTH - z, HEIGHT - y);          //xy : x,    yxz
+                case 8 -> new Point(WIDTH - x, y, z);                   //xy : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
+                case 9 -> new Point(WIDTH - x, y, DEPTH - z);           //00 : xxzz, xyyx, yy,   yzyx, zxyx, zyxy, zyyz, zyzx, zzxx
+                case 10-> new Point(WIDTH - x, HEIGHT - y, z);          //00 : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
                 case 11-> new Point(WIDTH - x, HEIGHT - y, DEPTH - z);//xy : xxyy, xyzy, xzxy, xzyz, xzzx, yyxx, yzzy, zxzy, zz
                 case 12-> new Point(WIDTH - x, z, y);       //00 : xyy,  yzy,  zxy,  zyz,  zzx
                 case 13-> new Point(WIDTH - x, z, HEIGHT - y);//xy : xzz,  yyx

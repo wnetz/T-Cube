@@ -69,6 +69,13 @@ public class SolutionState
         fill = new ArrayList<>();
         fill.addAll(tc);
     }
+
+    /**
+     * adds the next possible T if one exists and returns the orientation
+     * @param point point to be checked
+     * @param ori orientation to start checking at
+     * @return -2 if no possible T was found otherwise returns the orientation of the added T
+     */
     public int addT(Point point, int  ori)
     {
         int orientation = ori;
@@ -83,7 +90,7 @@ public class SolutionState
                 //Main.print("in: " + i + "\n");
                 for(Point p: points)
                 {
-                    cube[p.x()][p.y()][p.z()] = i%12;
+                    cube[p.x()][p.y()][p.z()] = i%12;// fit to the base 12 rotations
                     //Main.print("{"+p.getX() + "," + p.getY() + "," + p.getZ()+"} = "+i + "\n");
                 }
 
@@ -101,7 +108,7 @@ public class SolutionState
                 else
                 {
                     orientation = i;
-                    Point addPoint = switch (orientation)
+                    Point addPoint = switch (orientation)// change reference point to the standard point
                     {
                         case 12, 16 -> new Point(point.x()-1,point.y()-1,point.z());
                         case 13, 20 -> new Point(point.x()-1,point.y(),point.z()-1);
@@ -154,16 +161,23 @@ public class SolutionState
             //Main.print(point + " = "+-1 + "\n");
         }
     }
+
+    /**
+     * finds is a specific T fits at a specific point
+     * @param orientation
+     * @param point
+     * @return
+     */
     public ArrayList<Point> isOpen(int[][] orientation, Point point)
     {
         ArrayList<Point> points = new ArrayList<>();
         points.add(point);
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < 3; i++)// loop on all points in T
         {
             if(orientation[i][0] + point.x() < 0 || orientation[i][0] + point.x() >= 6
             || orientation[i][1] + point.y() < 0 || orientation[i][1] + point.y() >= cube[0].length
-            || orientation[i][2] + point.z() < 0 || orientation[i][2] + point.z() >= 6
-            || cube[orientation[i][0] + point.x()][orientation[i][1] + point.y()][orientation[i][2] + point.z()] != -1)
+            || orientation[i][2] + point.z() < 0 || orientation[i][2] + point.z() >= 6 // if point is in cube
+            || cube[orientation[i][0] + point.x()][orientation[i][1] + point.y()][orientation[i][2] + point.z()] != -1)// if point is unoccupied
             {
                 return null;
             }
@@ -171,6 +185,12 @@ public class SolutionState
         }
         return points;
     }
+
+    /**
+     * finds if a given point has any possible T's
+     * @param point
+     * @return true if there is an available T
+     */
     public boolean isOpen(Point point)
     {
         for (int[][] orientation : orientations)
@@ -262,6 +282,11 @@ public class SolutionState
         }
         Main.print("\n");*/
     }
+
+    /**
+     * checks to see if the addition of a T has left a frontier point with no possible T's
+     * @return false if all frontier points have a plausible T
+     */
     public boolean problems()
     {
         for(Point point: cubeFrontier)

@@ -56,6 +56,7 @@ public class Solve
                     if (cubeCopy(perms.get(c), solutions.get(j)))
                     {
                         solutions.remove(i);
+                        System.out.println(c);
                         removed++;
                         i--;
                         c = perms.size();
@@ -1825,6 +1826,12 @@ public class Solve
             }
         }
     }
+
+    /**
+     * finds if cube is a part of an explored set
+     * @param cube
+     * @return
+     */
     public boolean deadContains(ArrayList<T> cube)
     {
         boolean contained = false;
@@ -1852,9 +1859,16 @@ public class Solve
         }*/
         return contained;
     }
+
+    /**
+     * finds if one cube contains another
+     * @param large container
+     * @param small contained
+     * @return true if small is completely contained in large false otherwise
+     */
     public boolean contains(ArrayList<T> large,ArrayList<T> small)
     {
-        if(small.size() > large.size())
+        if(small.size() >= large.size())//if small has more T's it cannot be contained
             return false;
         for(int i = 0; i<= ROTATIONS;i++)
         {

@@ -7,6 +7,12 @@ public class T implements Comparable
         this.point = point;
         this.orientation = orientation;
     }
+
+    /**
+    * rotates a T
+    * @param rot which rotation to be performed
+    * @return rotated T
+    */
     public T rotate(int rot)
     {
         int ori = orientation;
@@ -951,48 +957,79 @@ public class T implements Comparable
         Point newPoint = point.rotate(rot);
         newPoint = switch (rot)
         {
-                case 1, 12 -> switch (ori)
+                case 1 -> switch (ori)
                 {
                         case 8,9,10,11 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
                         default -> newPoint;
                 };
-                case 2, 15 -> switch (ori)
+                case 2, 10 -> switch (ori)
                 {
                         case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
                         default -> newPoint;
                 };
-                case 3, 14 -> switch (ori)
+                case 3 -> switch (ori)
                 {
-                        case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
-                        case 8,9,10,11 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
-                        default -> newPoint;
-                };
-                case 4, 9 -> switch (ori)
-                {
-                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
-                        default -> newPoint;
-                };
-                case 5, 8 -> switch (ori)
-                {
-                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
-                        case 8,9,10,11 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
-                        default -> newPoint;
-                };
-                case 6, 11 -> switch (ori)
-                {
-                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
-                        case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
-                        default -> newPoint;
-                };
-                case 7, 10 -> switch (ori)
-                {
-                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
                         case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
                         case 8,9,10,11 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
                         default -> newPoint;
                 };
-                case 13-> switch (ori)
+                case 4 -> switch (ori)
                 {
+                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
+                        default -> newPoint;
+                };
+                case 5 -> switch (ori)
+                {
+                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
+                        case 8,9,10,11 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
+                        default -> newPoint;
+                };
+                case 6 -> switch (ori)
+                {
+                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
+                        case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
+                        default -> newPoint;
+                };
+                case 7 -> switch (ori)
+                {
+                        case 0,1,2,3 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
+                        case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
+                        case 8,9,10,11 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
+                        default -> newPoint;
+                };
+                case 9 -> switch (ori)
+                {
+                        case 0,1,2,3 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
+                        default -> newPoint;
+                };
+                case 11 -> switch (ori)
+                {
+                        case 0,1,2,3 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
+                        case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
+                        default -> newPoint;
+                };
+                case 12 -> switch (ori)
+                {
+                        case 8,9,10,11 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
+                        default -> newPoint;
+                };
+                case 13 -> switch (ori)
+                {
+                        case 0,1,2,3 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
+                        case 8,9,10,11 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
+                        default -> newPoint;
+                };
+                case 14 -> switch (ori)
+                {
+                        case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
+                        case 8,9,10,11 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
+                        default -> newPoint;
+                };
+                case 15 -> switch (ori)
+                {
+                        case 0,1,2,3 -> new Point(newPoint.x(),newPoint.y(),newPoint.z()-2);
+                        case 4,5,6,7 -> new Point(newPoint.x(),newPoint.y()-2,newPoint.z());
+                        case 8,9,10,11 -> new Point(newPoint.x()-2,newPoint.y(),newPoint.z());
                         default -> newPoint;
                 };
                 default -> newPoint;
