@@ -2,16 +2,9 @@ import java.io.Serializable;
 
 public record Point(int x, int y, int z) implements Comparable, Serializable
 {
-    private static int HEIGHT = 5;
-    private static final int WIDTH = 5;
-    private static final int DEPTH = 5;
-
-    public static void setHeight(int h){
-        HEIGHT = h;
-    }
-    public static int getHeight(){
-        return HEIGHT;
-    }
+    private static int HEIGHT = Main.HEIGHT;
+    private static final int WIDTH = Main.WIDTH;
+    private static final int DEPTH = Main.DEPTH;
 
     /**
      *
@@ -22,6 +15,16 @@ public record Point(int x, int y, int z) implements Comparable, Serializable
     public static Point subtract(Point point1, Point point2)
     {
         return new Point(point1.x() - point2.x(),point1.y() - point2.y(),point1.z() - point2.z());
+    }
+    /**
+     *
+     * @param point1
+     * @param point2
+     * @return point1 + point2
+     */
+    public static Point add(Point point1, Point point2)
+    {
+        return new Point(point1.x() + point2.x(),point1.y() + point2.y(),point1.z() + point2.z());
     }
 
     public Point setY(int y)
@@ -114,6 +117,37 @@ public record Point(int x, int y, int z) implements Comparable, Serializable
                 default-> new Point(x, y, z);
             };
         }
+    }
+    public Point rotate(Point rotation)
+    {
+        int x = switch (rotation.x()){
+            case 1 -> this.x();
+            case 2 -> this.y();
+            case 3 -> this.z();
+            case -1 -> WIDTH - this.x();
+            case -2 -> HEIGHT - this.y();
+            case -3 -> DEPTH - this.z();
+            default -> throw new IllegalStateException("Unexpected value: " + rotation.x());
+        };
+        int y = switch (rotation.x()){
+            case 1 -> this.x();
+            case 2 -> this.y();
+            case 3 -> this.z();
+            case -1 -> WIDTH - this.x();
+            case -2 -> HEIGHT - this.y();
+            case -3 -> DEPTH - this.z();
+            default -> throw new IllegalStateException("Unexpected value: " + rotation.x());
+        };
+        int z = switch (rotation.x()){
+            case 1 -> this.x();
+            case 2 -> this.y();
+            case 3 -> this.z();
+            case -1 -> WIDTH - this.x();
+            case -2 -> HEIGHT - this.y();
+            case -3 -> DEPTH - this.z();
+            default -> throw new IllegalStateException("Unexpected value: " + rotation.x());
+        };
+        return new Point(x,y,z);
     }
     public Point rotate_about_origin(int rotation)
     {

@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 public class Solve
 {
     public final int PRINT_TO;
-    public final int HEIGHT = 2;
     public final int ROTATIONS;
+    private static int HEIGHT = Main.HEIGHT+1;
+    private static final int WIDTH = Main.WIDTH+1;
+    private static final int DEPTH = Main.DEPTH+1;
     ArrayList<int[][][]> deadEnd;
-    ArrayList<ArrayList<T>> deadT;
+    ArrayList<ArrayList<Piece>> dead_cubes;
     ArrayList<int[][][]> knownSolutions;
     FileWriter solutionFile;
     FileWriter file;
@@ -25,18 +27,18 @@ public class Solve
     
     public Solve(int p, FileWriter f) throws IOException
     {
-        Point.setHeight(HEIGHT-1);
-        ROTATIONS = HEIGHT == 6 ? 47 : 15;
+        ROTATIONS = Rotations.read_qube_rotations(Main.QUBE_ROTATION_FILE).size();
         solutionFile = new FileWriter("solutions.txt");
         PRINT_TO = p;
         file = f;
         deadEnd = new ArrayList<>();
-        deadT = new ArrayList<>();
+        dead_cubes = new ArrayList<>();
         solutions = new ArrayList<>();
-        int[][][] cube = new int [6][HEIGHT][6];
-        for(int x = 0; x < 6; x++)
+        //initialize to empty
+        int[][][] cube = new int [WIDTH][HEIGHT][DEPTH];
+        for(int x = 0; x < WIDTH; x++)
             for(int y = 0; y < HEIGHT; y++)
-                for(int z = 0; z < 6; z++)
+                for(int z = 0; z < DEPTH; z++)
                     cube[x][y][z] = -1;
         //knownSolutions = readSolutions();
         System.out.println("start");
@@ -104,7 +106,7 @@ public class Solve
             {
                 if (row == 0)
                 {
-                    current = new int[6][HEIGHT][6];
+                    current = new int[WIDTH][HEIGHT][DEPTH];
                 }
                 else if(row == 6)
                 {
@@ -142,9 +144,9 @@ public class Solve
         {
             StringBuilder layer = new StringBuilder();
             boolean allEmpty = true;
-            for (int z = 0; z < 6; z++)
+            for (int z = 0; z < DEPTH; z++)
             {
-                for (int x = 0; x < 6; x++)
+                for (int x = 0; x < WIDTH; x++)
                     if (cube[x][y][z] != -1)
                     {
                         allEmpty = false;
@@ -176,9 +178,9 @@ public class Solve
     public  boolean cubeCopy(int[][][] c1, int[][][] c2)
     {
         boolean same = true;
-        for (int x = 0; x < 6 && same; x++)
+        for (int x = 0; x < WIDTH && same; x++)
             for (int y = 0; y < HEIGHT && same; y++)
-                for (int z = 0; z < 6; z++)
+                for (int z = 0; z < DEPTH; z++)
                     if (c1[x][y][z] != c2[x][y][z])
                     {
                         same = false;
@@ -916,44 +918,42 @@ public class Solve
 
     public void recursiveSolve(SolutionState solution, int depth)
     {
-        ArrayList<Point> oldCubeFrontier = solution.getCubeFrontier();
-        ArrayList<Point> oldCubeExplored = solution.getCubeExplored();
+        //used to avoid computation on backtrack
+        ArrayList<Point> oldCubeFrontier = new ArrayList<>(solution.getCubeFrontier());
+        ArrayList<Point> oldCubeExplored = new ArrayList<>(solution.getCubeExplored());
 
-        //Main.print("depth: " + depth + "\n");
         //try every point in the frontier
         for(Point point : oldCubeFrontier)
         {
-            //Main.print("rotation: " + rotation++ + "\n");
-
             int orientation = -1;
             //try every orientation on point
             while (orientation != -2)
             {
-                orientation = solution.addT(point, orientation);
+                orientation = solution.add_piece(point, orientation);
 
-                //Main.print("orientation: " + orientation + "\n");
-                //if already explored
-                //if(orientation != -2 && deadContains(solution.getCube()))
-                if(orientation != -2 && deadContains(solution.getTCube()))
+                //if piece added and solution already explored
+                if(orientation != -2 && is_explored(solution.getTCube()))
                 {
-                    solution.removeT(point, orientation);
+                    solution.remove_piece(point, orientation);
+                    //TODO check if last's in solutionState can be used instead
                     solution.setCubeFrontier(oldCubeFrontier);
                     solution.setCubeExplored(oldCubeExplored);
                 }
-                //if a T fits
+                //if a piece was added
                 else if (orientation != -2 )
                 {
-                    //printCube(solution.getCube(),file);
-
+                    //if there is still space
                     if (solution.getCubeFrontier().size() > 0)
                     {
+                        //start next set
                         recursiveSolve(new SolutionState(solution.getCubeFrontier(), solution.getCubeExplored(), solution.getCube(), solution.getTCube()), depth + 1);
-
-                        solution.removeT(point, orientation);
+                        //after done with lower levels pop last added to try next possible orientation
+                        solution.remove_piece(point, orientation);
+                        //TODO check if last's in solutionState can be used instead
                         solution.setCubeFrontier(oldCubeFrontier);
                         solution.setCubeExplored(oldCubeExplored);
                     }
-                    else
+                    else//if cube is full
                     {
                         solutions.add(solution.getCube());
                         if(solutions.size()%100 == 0)
@@ -1012,7 +1012,7 @@ public class Solve
             }
         }
     }
-    public boolean deadContains(int[][][] cube)
+    public boolean is_explored(int[][][] cube)
     {
         boolean contained = false;
         for (int[][][] d : deadEnd)
@@ -1054,9 +1054,9 @@ public class Solve
         }
         boolean contained = true;
         boolean empty = true;
-        for (int x = 0; x < 6 && contained; x++)
-            for (int y = 0; y < HEIGHT && contained; y++)
-                for (int z = 0; z < 6 && contained; z++)
+        for (int x = 0; x < WIDTH && contained; x++)
+            for (int y = 0; y < HEIGHT+1 && contained; y++)
+                for (int z = 0; z < DEPTH && contained; z++)
                 {
                     if(large[x][y][z] != -1)
                     {
@@ -1789,39 +1789,39 @@ public class Solve
         return new boolean[]{contained,empty};
     }
 
-    public void addDead(ArrayList<T> cube)
+    public void addDead(ArrayList<Piece> cube)
     {
         boolean added = false;
         boolean contains = false;
         boolean contained = false;
-        if(deadT.size() == 0 && cube.size()>0)
+        if(dead_cubes.size() == 0 && cube.size()>0)
         {
-            deadT.add(cube);
+            dead_cubes.add(cube);
         }
         else if(cube.size()>0)
         {
-            for (int d = 0; d < deadT.size(); d++)
+            for (int d = 0; d < dead_cubes.size(); d++)
             {
-                contains = contains(deadT.get(d),cube);
+                contains = contains(dead_cubes.get(d),cube);
                 if (contains)
                 {
                     contained = true;
                     if (!added)
                     {
-                        deadT.set(d, cube);
+                        dead_cubes.set(d, cube);
                         dead++;
                         added = true;
                     }
                     else
                     {
-                        deadT.remove(d);
+                        dead_cubes.remove(d);
                         d--;
                     }
                 }
             }
             if(!contains)
             {
-                deadT.add(cube);
+                dead_cubes.add(cube);
                 dead++;
             }
         }
@@ -1832,31 +1832,18 @@ public class Solve
      * @param cube
      * @return
      */
-    public boolean deadContains(ArrayList<T> cube)
+    public boolean is_explored(ArrayList<Piece> cube)
     {
         boolean contained = false;
-        for (ArrayList<T> d : deadT)
+        for (ArrayList<Piece> dead : dead_cubes)
         {
-            contained = contains(cube,d);
+            contained = contains(cube,dead);
             if(contained)
             {
                 kill++;
                 break;
             }
         }
-        /*if(!contained)
-        {
-            for (int[][][] s : knownSolutions)
-            {
-                contained = contains(cube,s)[0];
-                if(contained)
-                {
-                    kill++;
-                    System.out.println("Known");
-                    break;
-                }
-            }
-        }*/
         return contained;
     }
 
@@ -1866,16 +1853,19 @@ public class Solve
      * @param small contained
      * @return true if small is completely contained in large false otherwise
      */
-    public boolean contains(ArrayList<T> large,ArrayList<T> small)
+    public boolean contains(ArrayList<Piece> large,ArrayList<Piece> small)
     {
-        if(small.size() >= large.size())//if small has more T's it cannot be contained
+        if(small.size() >= large.size())//if small has more pieces it cannot be contained
             return false;
+        //TODO intuition says there is an optimisation here
+        //check all rotations
         for(int i = 0; i<= ROTATIONS;i++)
         {
             boolean contains = true;
-            for (T t : small)
+            for (Piece piece : small)
             {
-                if (!large.contains(t.rotate(i)))
+                //this only works if all points are unique
+                if (!large.contains(piece.rotate(i)))
                 {
                     contains = false;
                     break;
@@ -1883,9 +1873,6 @@ public class Solve
             }
             if(contains)
             {
-                /*System.out.println("TC: " + i);
-                System.out.println(large);
-                System.out.println(small);*/
                 return true;
             }
         }

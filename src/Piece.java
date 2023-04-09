@@ -1,10 +1,12 @@
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class Piece implements Comparable
 {
     private ArrayList<Point> base;
     private Point point;
     private int orientation;
+    private Hashtable<Point,ArrayList<Integer>> rotations;
 
     public Piece(int[][] points)
     {
@@ -40,15 +42,9 @@ public class Piece implements Comparable
 
     public Piece rotate(int rotation)
     {
-        int ori = orientation;
-        if(Point.getHeight()==5)
-        {
-            ori = switch (rotation){
-
-                default -> -1;
-            };
-        }
-        return new Piece(new Point(0,0,0),0);
+        Point rot = (Point)rotations.keySet().toArray()[rotation];
+        point = point.rotate(rot);
+        return new Piece(point,rotations.get(rotations).get(orientation));
     }
 
     @Override
