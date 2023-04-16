@@ -7,8 +7,9 @@ public class Main
     public static final int WIDTH = 5;
     public static final int DEPTH = 5;
     public static final int HEIGHT = 1;
+    public static final int ORIENTATION_FAIL = -2;
     public static final String PIECE_ROTATION_FILE = "src/t_piece_rotations.txt";
-    public static final String QUBE_ROTATION_FILE = "src/t_qube_rotations.txt";
+    public static final String CUBE_ROTATION_FILE = "src/t_qube_rotations.txt";
     public static final int PRINT_TO = 1;
     public static FileWriter file;
     public static void main(String[] args) throws IOException 
@@ -16,6 +17,8 @@ public class Main
         file = new FileWriter("solutions.txt");
         piece_rotations(new Piece(new int[][]{{ 1, 0, 0},{ 2, 0, 0},{ 1, 1, 0}}));
         qube_rotations();
+        Piece.rotations = Rotations.read_qube_rotations(Main.CUBE_ROTATION_FILE);
+        SolutionState.ORIENTATIONS = Rotations.read_piece_rotations(Main.PIECE_ROTATION_FILE);
         Solve solve = new Solve(PRINT_TO, file);
         file.close();
     }
@@ -220,7 +223,7 @@ public class Main
 
         //save rotation set
         Rotations.set_qube_rotations(rotation_set);
-        Rotations.write_qube_rotations(QUBE_ROTATION_FILE);
+        Rotations.write_qube_rotations(CUBE_ROTATION_FILE);
     }
     public static Piece rotate_x(Piece piece)
     {

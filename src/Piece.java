@@ -6,7 +6,7 @@ public class Piece implements Comparable
     private ArrayList<Point> base;
     private Point point;
     private int orientation;
-    private Hashtable<Point,ArrayList<Integer>> rotations;
+    public static  Hashtable<Point,ArrayList<Integer>> rotations;
 
     public Piece(int[][] points)
     {
@@ -33,18 +33,14 @@ public class Piece implements Comparable
         return orientation;
     }
 
-    public Piece set_point(Point point) {
-        return new Piece(point,orientation);
-    }
-    public Piece set_orientation(int orientation) {
-        return new Piece(point,orientation);
-    }
-
     public Piece rotate(int rotation)
     {
         Point rot = (Point)rotations.keySet().toArray()[rotation];
-        point = point.rotate(rot);
-        return new Piece(point,rotations.get(rotations).get(orientation));
+        int ori = rotations.get(rot).get(orientation);
+        Point rot2 = Point.subtract(SolutionState.ORIENTATIONS.get(orientation).get(2),point).rotate(rot);
+        rot = point.rotate(rot);
+        rot = rot.compareTo(rot2) > 0 ? rot2:rot;
+        return new Piece(rot,ori);
     }
 
     @Override

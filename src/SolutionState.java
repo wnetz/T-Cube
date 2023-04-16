@@ -10,10 +10,9 @@ public class SolutionState
     private int[][][] cube;
     private ArrayList<Point> cubeFrontier, cubeExplored, lastFrontier, lastExplored;
     private ArrayList<Piece> piece_cube;
-    public final ArrayList<ArrayList<Point>> orientations;
+    public static ArrayList<ArrayList<Point>> ORIENTATIONS;
     public SolutionState(int[][][] c)
     {
-        orientations = Rotations.read_piece_rotations(Main.PIECE_ROTATION_FILE);
         cube = new int [WIDTH][HEIGHT][DEPTH];
         for(int x = 0; x < WIDTH; x++)
         {
@@ -31,7 +30,6 @@ public class SolutionState
     }
     public SolutionState(ArrayList<Point> front, ArrayList<Point> explored, int[][][] c, ArrayList<Piece> tc)
     {
-        orientations = Rotations.read_piece_rotations(Main.PIECE_ROTATION_FILE);
         cube = new int [6][c[0].length][6];
         for(int x = 0; x < c.length; x++)
         {
@@ -54,17 +52,17 @@ public class SolutionState
      * adds the next possible T if one exists and returns the orientation
      * @param point point to be checked
      * @param ori orientation to start checking at
-     * @return -2 if no possible T was found otherwise returns the orientation of the added T
+     * @return Main.ORIENTATION_FAIL if no possible T was found otherwise returns the orientation of the added T
      */
     public int add_piece(Point point, int  ori)
     {
         int orientation = ori;
         ArrayList<Point> points;
 
-        for(int i = orientation+1; i < orientations.size(); i++)
+        for(int i = orientation+1; i < ORIENTATIONS.size(); i++)
         {
             //get open piece
-            points = isOpen(orientations.get(i),point);
+            points = isOpen(ORIENTATIONS.get(i),point);
             if(points != null)
             {
                 for(Point p: points)
@@ -75,7 +73,7 @@ public class SolutionState
 
                 updateExplored(points);
                 updateFrontier(points);
-                //TODO i belive this is faster for larger problems, but this needs to be checked
+                //TODO i believe this is faster for larger problems, but this needs to be checked
                 if(problems())
                 {
                     //revert updates
@@ -88,27 +86,7 @@ public class SolutionState
                 else
                 {
                     orientation = i;
-                    Point addPoint = Point.subtract(point,orientations.get(orientation).get(0));
-                    /*TODO this should be obsolete
-                    Point addPoint = switch (orientation)// change reference point to the standard point
-                    {
-                        case 12, 16 -> new Point(point.x()-1,point.y()-1,point.z());
-                        case 13, 20 -> new Point(point.x()-1,point.y(),point.z()-1);
-                        case 14 -> new Point(point.x()-1,point.y()+1,point.z());
-                        case 15 -> new Point(point.x()-1,point.y(),point.z()+1);
-                        case 17, 21 -> new Point(point.x(),point.y()-1,point.z()-1);
-                        case 18 -> new Point(point.x()+1,point.y()-1,point.z());
-                        case 19 -> new Point(point.x(),point.y()-1,point.z()+1);
-                        case 22 -> new Point(point.x()+1,point.y(),point.z()-1);
-                        case 23 -> new Point(point.x(),point.y()+1,point.z()-1);
-                        case 24, 25, 26, 27 -> new Point(point.x()-2,point.y(),point.z());
-                        case 28, 29, 30, 31 -> new Point(point.x(),point.y()-2,point.z());
-                        case 32, 33, 34, 35 -> new Point(point.x(),point.y(),point.z()-2);
-                        case 36, 37, 38, 39 -> new Point(point.x()-1,point.y(),point.z());
-                        case 40, 41, 42, 43 -> new Point(point.x(),point.y()-1,point.z());
-                        case 44, 45, 46, 47 -> new Point(point.x(),point.y(),point.z()-1);
-                        default -> new Point(point.x(),point.y(),point.z());
-                    };*/
+                    Point addPoint = Point.subtract(point, ORIENTATIONS.get(orientation).get(0));
                     Piece add_piece = new Piece(addPoint,i%12);
                     piece_cube.add(add_piece);
                     break;
@@ -118,18 +96,18 @@ public class SolutionState
         //if no available orientation was found
         if(orientation == ori)
         {
-            return -2;
+            return Main.ORIENTATION_FAIL;
         }
 
         return orientation;
     }
     public void remove_piece(Point point, int orientation)
     {
-        cube[point.x()][point.y()][point.z()] = -1;
+        //cube[point.x()][point.y()][point.z()] = -1;
         piece_cube.remove(new Piece(point,orientation));
-        for(int j = 0; j < 3; j++)
+        for(int j = 0; j < ORIENTATIONS.get(orientation).size(); j++)
         {
-            cube[point.x() + orientations.get(orientation).get(j).x()][point.y() + orientations.get(orientation).get(j).y()][point.z() + orientations.get(orientation).get(j).z()] = -1;
+            cube[point.x() + ORIENTATIONS.get(orientation).get(j).x()][point.y() + ORIENTATIONS.get(orientation).get(j).y()][point.z() + ORIENTATIONS.get(orientation).get(j).z()] = -1;
         }
     }
     /*public void removeT(ArrayList<Point> points)
@@ -149,8 +127,9 @@ public class SolutionState
     public ArrayList<Point> isOpen(ArrayList<Point> orientation, Point point)
     {
         ArrayList<Point> points = new ArrayList<>();
-        for(int i = 0; i < 4; i++)// loop on all points in T
+        for(int i = 0; i < orientation.size(); i++)// loop on all points in T
         {
+            //get point relative to cube instead of piece
             Point test = Point.add(orientation.get(i),point);
             if(test.x() < 0 || test.x() >= WIDTH
             || test.y() < 0 || test.y() >= HEIGHT
@@ -170,7 +149,7 @@ public class SolutionState
      */
     public boolean isOpen(Point point)
     {
-        for (ArrayList<Point> orientation : orientations)
+        for (ArrayList<Point> orientation : ORIENTATIONS)
         {
             if (isOpen(orientation, point) != null)
             {
