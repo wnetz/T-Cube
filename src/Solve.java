@@ -233,7 +233,6 @@ public class Solve
             while (orientation != Main.ORIENTATION_FAIL)
             {
                 orientation = solution.add_piece(point, orientation);
-
                 //if piece added and solution already explored
                 if(orientation != Main.ORIENTATION_FAIL && is_explored(solution.getTCube()))
                 {
@@ -250,6 +249,14 @@ public class Solve
                     {
                         //start next set
                         recursiveSolve(new SolutionState(solution.getCubeFrontier(), solution.getCubeExplored(), solution.getCube(), solution.getTCube()), depth + 1);
+                        int size = solution.getTCube().size();
+                        double v = Math.log(size) / Math.log(2);
+                        if(size == 1 || (int)(Math.ceil(v)) == (int)(Math.floor(v)))
+                        {
+                            ArrayList<Piece> copy = new ArrayList<>();
+                            copy.addAll(solution.getTCube());
+                            addDead(copy);
+                        }
                         //after done with lower levels pop last added to try next possible orientation
                         solution.remove_piece(point, orientation);
                         //TODO check if last's in solutionState can be used instead
