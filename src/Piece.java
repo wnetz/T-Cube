@@ -3,11 +3,16 @@ import java.util.Hashtable;
 
 public class Piece implements Comparable
 {
-    private ArrayList<Point> base;
+    private ArrayList<Point> base;// only used in program initialization
     private Point point;
     private int orientation;
     public static  Hashtable<Point,ArrayList<Integer>> rotations;
+    public static Object[] rotationKeys;
 
+    /**
+     * used exclusively for use in Main finding all rotations of the base piece
+     * @param points set of x,y,z points that compose base piece
+     */
     public Piece(int[][] points)
     {
         base = new ArrayList<>();
@@ -21,7 +26,10 @@ public class Piece implements Comparable
         this.point = point;
         this.orientation = orientation;
     }
-
+    /**
+     * used exclusively for use in Main finding all rotations of the base piece
+     * @return all points the piece inhabits
+     */
     public ArrayList<Point> get_array()
     {
         return base;
@@ -35,10 +43,11 @@ public class Piece implements Comparable
 
     public Piece rotate(int rotation)
     {
-        Point rot = (Point)rotations.keySet().toArray()[rotation];
+        Point rot = (Point)rotationKeys[rotation];// this piece of shit was nearly 60% of the run time
         int ori = rotations.get(rot).get(orientation);
         Point rot2 = Point.subtract(SolutionState.ORIENTATIONS.get(orientation).get(2),point).rotate(rot);
         rot = point.rotate(rot);
+        //gets the point closer to origin because base orientations are defined by point closest to origin
         rot = rot.compareTo(rot2) > 0 ? rot2:rot;
         return new Piece(rot,ori);
     }

@@ -15,7 +15,6 @@ public class Solve
     private static int HEIGHT = Main.HEIGHT+1;
     private static final int WIDTH = Main.WIDTH+1;
     private static final int DEPTH = Main.DEPTH+1;
-    ArrayList<int[][][]> deadEnd;
     ArrayList<ArrayList<Piece>> dead_cubes;
     ArrayList<int[][][]> knownSolutions;
     FileWriter solutionFile;
@@ -27,20 +26,21 @@ public class Solve
     
     public Solve(int p, FileWriter f) throws IOException
     {
-        ROTATIONS = Rotations.read_qube_rotations(Main.CUBE_ROTATION_FILE).size();
+        ROTATIONS = Rotations.read_cube_rotations(Main.CUBE_ROTATION_FILE).size();
         solutionFile = new FileWriter("solutions.txt");
         PRINT_TO = p;
         file = f;
-        deadEnd = new ArrayList<>();
         dead_cubes = new ArrayList<>();
         solutions = new ArrayList<>();
+
         //initialize to empty
         int[][][] cube = new int [WIDTH][HEIGHT][DEPTH];
         for(int x = 0; x < WIDTH; x++)
             for(int y = 0; y < HEIGHT; y++)
                 for(int z = 0; z < DEPTH; z++)
                     cube[x][y][z] = -1;
-        //knownSolutions = readSolutions();
+
+        //knownSolutions = readSolutions();//for partial run or lower heights
         System.out.println("start");
         time = System.nanoTime();
         recursiveSolve(new SolutionState(cube),0);
@@ -172,7 +172,7 @@ public class Solve
     }
 
     /***
-     *
+     * used for final copy check
      * @return checks if two cubes are an exact copy
      */
     public  boolean cubeCopy(int[][][] c1, int[][][] c2)
@@ -190,7 +190,7 @@ public class Solve
     }
 
     /***
-     *
+     * used for final copy check
      * @return all reflections and rotations of cube
      */
     public  ArrayList<int[][][]> getPerms(int[][][] cube)
@@ -236,8 +236,8 @@ public class Solve
                 //if piece added and solution already explored
                 if(orientation != Main.ORIENTATION_FAIL && is_explored(solution.getTCube()))
                 {
+                    //undo piece add
                     solution.remove_piece(point, orientation);
-                    //TODO check if last's in solutionState can be used instead
                     solution.setCubeFrontier(oldCubeFrontier);
                     solution.setCubeExplored(oldCubeExplored);
                 }
@@ -250,7 +250,8 @@ public class Solve
                         //start next set
                         recursiveSolve(new SolutionState(solution.getCubeFrontier(), solution.getCubeExplored(), solution.getCube(), solution.getTCube()), depth + 1);
                         int size = solution.getTCube().size();
-                        double v = Math.log(size) / Math.log(2);
+                        //if size is equal to a power of lower log add dead
+                        double v = Math.log(size) / Math.log(2);//TODO find optimal ratio
                         if(size == 1 || (int)(Math.ceil(v)) == (int)(Math.floor(v)))
                         {
                             ArrayList<Piece> copy = new ArrayList<>();
@@ -259,14 +260,13 @@ public class Solve
                         }
                         //after done with lower levels pop last added to try next possible orientation
                         solution.remove_piece(point, orientation);
-                        //TODO check if last's in solutionState can be used instead
                         solution.setCubeFrontier(oldCubeFrontier);
                         solution.setCubeExplored(oldCubeExplored);
                     }
                     else//if cube is full
                     {
                         solutions.add(solution.getCube());
-                        if(solutions.size()%100 == 0)
+                        if(solutions.size()%1 == 0)
                         {
                             System.out.println("solutions " + solutions.size() + " " + (System.nanoTime() - time) / 60000000000.0);
                         }
@@ -287,19 +287,18 @@ public class Solve
     {
         boolean added = false;
         boolean contains = false;
-        boolean contained = false;
         if(dead_cubes.size() == 0 && cube.size()>0)
         {
             dead_cubes.add(cube);
         }
         else if(cube.size()>0)
         {
-            for (int d = 0; d < dead_cubes.size(); d++)
+            int size = dead_cubes.size();//small optimization to reduce calls
+            for (int d = 0; d < size; d++)
             {
                 contains = contains(dead_cubes.get(d),cube);
                 if (contains)
                 {
-                    contained = true;
                     if (!added)
                     {
                         dead_cubes.set(d, cube);
@@ -310,6 +309,7 @@ public class Solve
                     {
                         dead_cubes.remove(d);
                         d--;
+                        size--;
                     }
                 }
             }

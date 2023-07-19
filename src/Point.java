@@ -82,6 +82,9 @@ public record Point(int x, int y, int z) implements Comparable, Serializable
         return obj instanceof Point && ((Point) obj).x == x && ((Point) obj).y == y && ((Point) obj).z == z;
     }
 
+    /**
+     * functionality is based on necessity of Piece object
+     */
     @Override
     public int compareTo(Object obj) {
         if (obj instanceof Point)

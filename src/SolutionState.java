@@ -11,6 +11,7 @@ public class SolutionState
     private ArrayList<Point> cubeFrontier, cubeExplored, lastFrontier, lastExplored;
     private ArrayList<Piece> piece_cube;
     public static ArrayList<ArrayList<Point>> ORIENTATIONS;
+    public static int ORIENTATIONS_SIZE;//small optimization to reduce calls
     public SolutionState(int[][][] c)
     {
         cube = new int [WIDTH][HEIGHT][DEPTH];
@@ -59,7 +60,7 @@ public class SolutionState
         int orientation = ori;
         ArrayList<Point> points;
 
-        for(int i = orientation+1; i < ORIENTATIONS.size(); i++)
+        for(int i = orientation+1; i < ORIENTATIONS_SIZE; i++)
         {
             //get open piece
             points = isOpen(ORIENTATIONS.get(i),point);
@@ -110,15 +111,6 @@ public class SolutionState
             cube[point.x() + ORIENTATIONS.get(orientation).get(j).x()][point.y() + ORIENTATIONS.get(orientation).get(j).y()][point.z() + ORIENTATIONS.get(orientation).get(j).z()] = -1;
         }
     }
-    /*public void removeT(ArrayList<Point> points)
-    {
-        //Main.print("removeT "+ points + "\n");
-        for(Point point: points)
-        {
-            cube[point.x()][point.y()][point.z()] = -1;
-            //Main.print(point + " = "+-1 + "\n");
-        }
-    }*/
 
     /**
      * finds is a specific T fits at a specific point
@@ -127,7 +119,8 @@ public class SolutionState
     public ArrayList<Point> isOpen(ArrayList<Point> orientation, Point point)
     {
         ArrayList<Point> points = new ArrayList<>();
-        for(int i = 0; i < orientation.size(); i++)// loop on all points in T
+        int o = orientation.size();//small optimization to reduce calls
+        for(int i = 0; i < o; i++)// loop on all points in T
         {
             //get point relative to cube instead of piece
             Point test = Point.add(orientation.get(i),point);
@@ -240,7 +233,6 @@ public class SolutionState
         }
         return false;
     }
-
 
     public int[][][] getCube()
     {

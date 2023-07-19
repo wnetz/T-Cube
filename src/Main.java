@@ -6,19 +6,21 @@ public class Main
 {
     public static final int WIDTH = 5;
     public static final int DEPTH = 5;
-    public static final int HEIGHT = 1;
+    public static final int HEIGHT = 3;
     public static final int ORIENTATION_FAIL = -2;
     public static final String PIECE_ROTATION_FILE = "src/t_piece_rotations.txt";
-    public static final String CUBE_ROTATION_FILE = "src/t_qube_rotations.txt";
+    public static final String CUBE_ROTATION_FILE = "src/t_cube_rotations.txt";
     public static final int PRINT_TO = 1;
     public static FileWriter file;
     public static void main(String[] args) throws IOException 
     {
         file = new FileWriter("solutions.txt");
         piece_rotations(new Piece(new int[][]{{ 1, 0, 0},{ 2, 0, 0},{ 1, 1, 0}}));
-        qube_rotations();
-        Piece.rotations = Rotations.read_qube_rotations(Main.CUBE_ROTATION_FILE);
+        Cube_rotations();
+        Piece.rotations = Rotations.read_cube_rotations(Main.CUBE_ROTATION_FILE);
+        Piece.rotationKeys = Piece.rotations.keySet().toArray();
         SolutionState.ORIENTATIONS = Rotations.read_piece_rotations(Main.PIECE_ROTATION_FILE);
+        SolutionState.ORIENTATIONS_SIZE = SolutionState.ORIENTATIONS.size();
         Solve solve = new Solve(PRINT_TO, file);
         file.close();
     }
@@ -96,7 +98,7 @@ public class Main
         Rotations.set_piece_rotations(rotation_set);
         Rotations.write_piece_rotations(PIECE_ROTATION_FILE);
     }
-    public static void qube_rotations()
+    public static void Cube_rotations()
     {
         Hashtable<Point,ArrayList<Integer>> rotation_set = new Hashtable<>();
         for(int orientation = 0; orientation < 12; orientation++)
@@ -222,8 +224,8 @@ public class Main
         }
 
         //save rotation set
-        Rotations.set_qube_rotations(rotation_set);
-        Rotations.write_qube_rotations(CUBE_ROTATION_FILE);
+        Rotations.set_cube_rotations(rotation_set);
+        Rotations.write_cube_rotations(CUBE_ROTATION_FILE);
     }
     public static Piece rotate_x(Piece piece)
     {

@@ -5,7 +5,7 @@ import java.util.Hashtable;
 public class Rotations implements Serializable
 {
     private static ArrayList<ArrayList<Point>> piece_rotations;
-    private static Hashtable<Point,ArrayList<Integer>> qube_rotations;
+    private static Hashtable<Point,ArrayList<Integer>> cube_rotations;
     public static void set_piece_rotations(ArrayList<ArrayList<Point>> pr)
     {
         piece_rotations = new ArrayList<>();
@@ -52,9 +52,9 @@ public class Rotations implements Serializable
         return piece_rotations;
     }
 
-    public static void set_qube_rotations(Hashtable<Point,ArrayList<Integer>> qr)
+    public static void set_cube_rotations(Hashtable<Point,ArrayList<Integer>> qr)
     {
-        qube_rotations = new Hashtable<>();
+        cube_rotations = new Hashtable<>();
         for (Point point: qr.keySet())
         {
             ArrayList<Integer> temp = new ArrayList<>();
@@ -62,16 +62,16 @@ public class Rotations implements Serializable
             {
                 temp.add(orientation);
             }
-            qube_rotations.put(point,temp);
+            cube_rotations.put(point,temp);
         }
     }
-    public static void write_qube_rotations(String file)
+    public static void write_cube_rotations(String file)
     {
         try
         {
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(qube_rotations);
+            oos.writeObject(cube_rotations);
             oos.close();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -80,13 +80,13 @@ public class Rotations implements Serializable
         }
 
     }
-    public static Hashtable<Point,ArrayList<Integer>> read_qube_rotations(String file)
+    public static Hashtable<Point,ArrayList<Integer>> read_cube_rotations(String file)
     {
         try
         {
             FileInputStream fis = new FileInputStream(file);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            qube_rotations = (Hashtable<Point,ArrayList<Integer>>) ois.readObject();
+            cube_rotations = (Hashtable<Point,ArrayList<Integer>>) ois.readObject();
             ois.close();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -95,6 +95,6 @@ public class Rotations implements Serializable
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return qube_rotations;
+        return cube_rotations;
     }
 }
